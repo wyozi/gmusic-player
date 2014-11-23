@@ -1,21 +1,19 @@
 <div>
     <input style="width: 100%" min="0" max="{{audio.duration}}" step="0.01" type="range" ng-model="currentTime" ng-change="updateCurrentTime()"/>
 </div>
-<div>
-    <span class="width: 30%">
+<div style="display: flex">
+    <div style="flex: 1 1 auto">
         Volume:
         <input min="0" max="1" step="0.01" type="range" ng-model="volume" ng-change="updateVolume()"/>
-    </span>
+    </div>
 
-    <span class="width: 40%">
+    <div style="flex: 1 1 auto">
         <img width="30" height="30" src="{{info.albumart}}" /> {{info.artist}} - {{info.title}}
-    </span>
+    </div>
 
-    <span class="width:30%">
-        <button ng-disabled="currentNum == 0" class="btn btn-default prev" ng-click="prev()"><i class="glyphicon glyphicon-step-backward"></i> prev</button>
-        <button class="btn btn-default playpause" ng-click="playpause()">
-            <span class="play-text"><i class="glyphicon glyphicon-play"></i> play</span>
-        </button>
-        <button ng-disabled="currentNum >= (totalNum-1)" class="btn btn-default next" ng-click="next()">next <i class="glyphicon glyphicon-step-forward"></i></button>
-    </span>
+    <div style="flex: 1 1 auto">
+        <button ng-click="prev()">prev</button>
+        <button ng-click="playpause()">play/pause</button>
+        <button ng-click="next()">next</button>
+    </div>
 </div>
