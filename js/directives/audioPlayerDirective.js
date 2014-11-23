@@ -1,5 +1,5 @@
 angular.module('audioPlayer-directive', ['ngCookies'])
-    .directive('audioPlayer', ['$rootScope', '$cookies', function($rootScope, $cookies) {
+    .directive('audioPlayer', ['$rootScope', '$cookies', '$window', function($rootScope, $cookies, $window) {
         return {
             restrict: 'E',
             scope: {},
@@ -24,6 +24,13 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                     $cookies.playervolume = $scope.volume;
                     $scope.audio.volume = $scope.volume;
                 }
+
+                angular.element($window).on('keydown', function(e) {
+                    if (e.keyCode == 32) {
+                        $scope.playpause();
+                    }
+                });
+
 
                 // listen for audio-element events, and broadcast stuff
                 $scope.audio.addEventListener('play', function(){ $rootScope.$broadcast('audio:play', this); });
