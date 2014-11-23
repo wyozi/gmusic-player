@@ -98,6 +98,14 @@
         display:block;
         overflow:auto;
     }
+
+    .fixed-sidebar {
+        width: 300px;
+        position: fixed;
+    }
+    .col-offset-sidebar {
+        margin-left: 315px;
+    }
     </style>
 </head>
 
@@ -119,7 +127,7 @@
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2 sidebar">
+            <div class="fixed-sidebar sidebar">
                 <!--Sidebar content-->
 
                 <div class="input-group" ng-controller="SearchCtrl">
@@ -138,7 +146,7 @@
                 </ul>
 
             </div>
-            <div class="col-md-10" ng-controller="MusicQueryCtrl">
+            <div class="col-md-12 col-offset-sidebar" ng-controller="MusicQueryCtrl">
                 <!--Body content-->
 
                 <h3>
