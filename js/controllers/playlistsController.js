@@ -9,7 +9,7 @@ angular.module('gmusicPlayerApp')
 
         $scope.setPlaylist = function(playlist) {
             GMusic.fetchPlaylistSongs(playlist.id, function(songs) {
-                $rootScope.$broadcast('musicquery:setresults', 'songs from playlist "' + playlist.name + '"', songs);
+                $rootScope.$broadcast('musicquery:setresults', 'playlist "' + playlist.name + '"', songs);
             });
         }
 

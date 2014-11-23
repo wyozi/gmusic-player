@@ -78,8 +78,12 @@
         height: 32px;
     }
 
+    .playlist-songs > tr.activesong td {
+        background-color: #C7F464;
+    }
+
     .playlist-songs > tr:hover td {
-        background-color: cyan;
+        background-color: #4ECDC4;
         cursor: pointer;
     }
 
@@ -131,13 +135,15 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">GMusic Player</a>
             </div>
+            <!--
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
-            </div><!--/.nav-collapse -->
+            </div>
+            -->
         </div>
     </nav>
 
@@ -162,11 +168,12 @@
                 </ul>
 
             </div>
-            <div class="col-md-12 col-offset-sidebar" ng-controller="MusicQueryCtrl">
+            <div class="col-md-9 col-offset-sidebar" ng-controller="MusicQueryCtrl">
                 <!--Body content-->
 
                 <h3>
-                    Results for: {{ query }}
+                    Results for
+                    <button ng-repeat="query in queries" class="btn btn-info">{{ query }}</button>
                 </h3>
                 <div class="table-responsive music-list">
                     <table class="table table-striped">
@@ -179,7 +186,7 @@
                             </tr>
                         </thead>
                         <tbody class="playlist-songs">
-                            <tr ng-repeat="song in results" ng-click="setCurrentSong(song)">
+                            <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSongId == song.id}">
                                 <td><img src="{{ song.albumart }}" class="albumart"></td>
                                 <td>{{ song.artist }}</td>
                                 <td>{{ song.title }}</td>

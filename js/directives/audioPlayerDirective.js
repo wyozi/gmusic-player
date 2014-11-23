@@ -38,6 +38,8 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                     $scope.audio.play();
 
                     $scope.info = info;
+
+                    $rootScope.currentSongId = info.id;
                 });
 
                 $scope.audio.addEventListener('timeupdate', function() {
