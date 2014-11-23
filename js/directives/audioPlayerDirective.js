@@ -9,6 +9,8 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                 $scope.audio.volume = $cookies.playervolume || 1;
                 $scope.volume = $scope.audio.volume;
 
+                $scope.currentTime = 0;
+
                 // tell others to give me my prev/next track (with audio.set message)
                 $scope.next = function() { $rootScope.$broadcast('audio:next'); };
                 $scope.prev = function() { $rootScope.$broadcast('audio:prev'); };

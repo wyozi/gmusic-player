@@ -64,15 +64,6 @@
         background-color: #f5f5f5;
     }
 
-    /* minimal CSS to get started with component. feel free to override in main.css */
-    audio-player .paused .play-text,
-    audio-player .pause-text {
-        display:inline-block;
-    }
-    audio-player .play-text,
-    audio-player .paused .pause-text {
-        display:none;
-    }
     audio-player * {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -80,8 +71,6 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-
-        display: inline-block;
     }
 
     .albumart {
@@ -106,6 +95,33 @@
     .col-offset-sidebar {
         margin-left: 315px;
     }
+
+    input[type='range'] {
+        -webkit-appearance: none !important;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+        height: 5px;
+        background: #ddd;
+        border: none;
+        border-radius: 3px;
+    }
+    input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        border: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: goldenrod;
+        margin-top: -6px;
+    }
+    input[type=range]:focus {
+        outline: none;
+    }
+
+    input[type=range]:focus::-webkit-slider-runnable-track {
+        background: #ccc;
+    }
+
     </style>
 </head>
 
@@ -130,14 +146,14 @@
             <div class="fixed-sidebar sidebar">
                 <!--Sidebar content-->
 
-                <div class="input-group" ng-controller="SearchCtrl">
-                    <form ng-submit="search()">
+                <form ng-submit="search()">
+                    <div class="input-group" ng-controller="SearchCtrl">
                         <input type="text" class="form-control" ng-model="query" required>
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="button" ng-click="search()">Search!</button>
                         </span>
-                    </form>
-                </div><!-- /input-group -->
+                    </div><!-- /input-group -->
+                </form>
 
                 <ul class="nav nav-sidebar" ng-controller="PlaylistsCtrl">
                     <li ng-repeat="playlist in playlists" ng-click="setPlaylist(playlist)">
