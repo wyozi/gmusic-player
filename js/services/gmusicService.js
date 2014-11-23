@@ -36,6 +36,7 @@ GMusic.prototype.fetchPlaylistSongs = function(playlistid, callback) {
         var rawPlaylistEntries = data.data.items.filter(function(entry) {
             return entry.playlistId == playlistid;
         });
+
         var allAccessEntries = rawPlaylistEntries.filter(function(e) { return e.track != undefined; }).map(function(entry) {
             var track = entry.track;
             return parseTrackObject(track, entry.trackId);
@@ -47,13 +48,24 @@ GMusic.prototype.fetchPlaylistSongs = function(playlistid, callback) {
 
         // There are custom (self-uploaded) songs in this playlist, we need to query library
         if (customEntryTrackIds && customEntryTrackIds.length >= 0) {
+
+            var rawPlaylistEntryPositions = {};
+            rawPlaylistEntries.forEach(function(o) {
+                rawPlaylistEntryPositions[o.trackId] = o.absolutePosition;
+            });
+
             pm.getLibrary(function(lib) {
                 var customEntries = lib.data.items.filter(function(e) {
                     return customEntryTrackIds.indexOf(e.id) != -1;
                 }).map(function(e) {
                     return parseTrackObject(e, e.id);
                 });
-                callback(allAccessEntries.concat(customEntries));
+
+                var allEntries = allAccessEntries.concat(customEntries).sort(function(a, b) {
+                    return rawPlaylistEntryPositions[a.id] - rawPlaylistEntryPositions[b.id];
+                });
+
+                callback(allEntries);
             });
         }
         else {
