@@ -11,9 +11,8 @@ angular.module('audioPlayer-directive', ['ngCookies'])
 
                 $scope.currentTime = 0;
 
-                // tell others to give me my prev/next track (with audio.set message)
-                $scope.next = function() { $rootScope.$broadcast('audio:next'); };
-                $scope.prev = function() { $rootScope.$broadcast('audio:prev'); };
+                $scope.next = function() {};
+                $scope.prev = function() {};
 
                 // tell audio element to play/pause, you can also use $scope.audio.play() or $scope.audio.pause();
                 $scope.playpause = function() { var a = $scope.audio.paused ? $scope.audio.play() : $scope.audio.pause(); };
@@ -39,7 +38,9 @@ angular.module('audioPlayer-directive', ['ngCookies'])
 
                     $scope.info = info;
 
-                    $rootScope.currentSongId = info.id;
+                    $rootScope.currentSong = {
+                        info: info
+                    }
                 });
 
                 $scope.audio.addEventListener('timeupdate', function() {

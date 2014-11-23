@@ -3,12 +3,12 @@
 </div>
 <div style="display: flex">
     <div style="flex: 1 1 auto">
-        Volume:
-        <input min="0" max="1" step="0.01" type="range" ng-model="volume" ng-change="updateVolume()"/>
+        <img width="30" height="30" src="{{info.albumart}}" style="vertical-align: middle" /> <span>{{info.artist}} - {{info.title}}</span>
     </div>
 
     <div style="flex: 1 1 auto">
-        <img width="30" height="30" src="{{info.albumart}}" /> {{info.artist}} - {{info.title}}
+        Volume:
+        <input min="0" max="1" step="0.01" type="range" ng-model="volume" ng-change="updateVolume()"/>
     </div>
 
     <div style="flex: 1 1 auto">

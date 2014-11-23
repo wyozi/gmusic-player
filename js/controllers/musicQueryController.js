@@ -11,6 +11,11 @@ angular.module('gmusicPlayerApp')
             }
             $scope.queries.push(query);
             $scope.results = $scope.results.concat(results);
+
+            var playlistRef = $scope.results.copy();
+            $scope.results.forEach(function(res) {
+                res.playlistRef = playlistRef;
+            })
         });
 
         $scope.setCurrentSong = function(song) {

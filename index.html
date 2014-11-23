@@ -4,6 +4,7 @@
     <title>GMusic Player</title>
 
     <link rel="stylesheet" type="text/css" href="css/app.css">
+    <link rel="stylesheet" type="text/css" href="css/player.css">
 
     <script type="text/javascript" src="js/lib/angular.min.js"></script>
     <script type="text/javascript" src="js/lib/angular-resource.min.js"></script>
@@ -33,7 +34,7 @@
                 </div><!-- /input-group -->
             </form>
 
-            <ul class="nav nav-sidebar" ng-controller="PlaylistsCtrl">
+            <ul class="playlists" ng-controller="PlaylistsCtrl">
                 <li ng-repeat="playlist in playlists" ng-click="setPlaylist(playlist)">
                     <a href="#/playlists/{{playlist.id}}">{{ playlist.name }}</a>
                 </li>
@@ -56,7 +57,7 @@
                         </tr>
                     </thead>
                     <tbody class="playlist-songs">
-                        <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSongId == song.id}">
+                        <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSong && currentSong.info.id == song.id}">
                             <td><img src="{{ song.albumart }}" class="albumart"></td>
                             <td>{{ song.artist }}</td>
                             <td>{{ song.title }}</td>
