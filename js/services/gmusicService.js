@@ -6,7 +6,6 @@ var pm = new PlayMusic();
 function GMusic() {
 }
 
-
 GMusic.prototype.login = function(callback) {
     var creds = JSON.parse(fs.readFileSync("credentials.txt", "utf8"));
 
@@ -25,7 +24,7 @@ function parseTrackObject(trackobj, trackid) {
     return {
         id: trackid,
 
-        albumart: trackobj.albumArtRef.length > 0 ? trackobj.albumArtRef[0].url : "",
+        albumart: (trackobj.albumArtRef && trackobj.albumArtRef.length > 0) ? trackobj.albumArtRef[0].url : "",
         artist: trackobj.artist,
         album: trackobj.album,
         title: trackobj.title
@@ -34,14 +33,34 @@ function parseTrackObject(trackobj, trackid) {
 
 GMusic.prototype.fetchPlaylistSongs = function(playlistid, callback) {
     pm.getPlayListEntries(function(data) {
-        var thisPlEntries = data.data.items.filter(function(entry) {
+        var rawPlaylistEntries = data.data.items.filter(function(entry) {
             return entry.playlistId == playlistid;
-        }).filter(function(e) { return e.track != undefined; }).map(function(entry) {
+        });
+        var allAccessEntries = rawPlaylistEntries.filter(function(e) { return e.track != undefined; }).map(function(entry) {
             var track = entry.track;
             return parseTrackObject(track, entry.trackId);
         });
 
-        callback(thisPlEntries);
+        var customEntryTrackIds = rawPlaylistEntries.filter(function(e) { return e.track == undefined; }).map(function(e) {
+            return e.trackId;
+        });
+
+        // There are custom (self-uploaded) songs in this playlist, we need to query library
+        if (customEntryTrackIds && customEntryTrackIds.length >= 0) {
+            pm.getLibrary(function(lib) {
+                var customEntries = lib.data.items.filter(function(e) {
+                    return customEntryTrackIds.indexOf(e.id) != -1;
+                }).map(function(e) {
+                    return parseTrackObject(e, e.id);
+                });
+                callback(allAccessEntries.concat(customEntries));
+            });
+        }
+        else {
+            callback(allAccessEntries);
+        }
+
+
     });
 }
 
