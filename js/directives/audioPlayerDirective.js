@@ -9,10 +9,24 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                 $scope.audio.volume = $cookies.playervolume || 1;
                 $scope.volume = $scope.audio.volume;
 
+                $scope.loopStates = [
+                    {text: 'off'},
+                    {text: 'all'},
+                    {text: 'single'}
+                ];
+                $scope.loopState = 0;
+
                 $scope.currentTime = 0;
 
-                $scope.next = function() {
-                    $rootScope.$broadcast('audio:next');
+                $scope.next = function(triggeredByEndEvent) {
+                    if (triggeredByEndEvent && $scope.loopState == 2) {
+                        // Repeat
+                        $scope.audio.currentTime = 0;
+                        $scope.audio.play();
+                    }
+                    else {
+                        $rootScope.$broadcast('audio:next', triggeredByEndEvent, $scope.loopStates[$scope.loopState].text);
+                    }
                 };
                 $scope.prev = function() {
                     $rootScope.$broadcast('audio:prev');
@@ -20,6 +34,10 @@ angular.module('audioPlayer-directive', ['ngCookies'])
 
                 // tell audio element to play/pause, you can also use $scope.audio.play() or $scope.audio.pause();
                 $scope.playpause = function() { var a = $scope.audio.paused ? $scope.audio.play() : $scope.audio.pause(); };
+
+                $scope.cycleLoopState = function() {
+                    $scope.loopState = ($scope.loopState+1) % $scope.loopStates.length;
+                }
 
                 $scope.updateCurrentTime = function() {
                     $scope.audio.currentTime = $scope.currentTime;
@@ -40,7 +58,7 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                 $scope.audio.addEventListener('play', function(){ $rootScope.$broadcast('audio:play', this); });
                 $scope.audio.addEventListener('pause', function(){ $rootScope.$broadcast('audio:pause', this); });
                 $scope.audio.addEventListener('timeupdate', function(){ $rootScope.$broadcast('audio:time', this); });
-                $scope.audio.addEventListener('ended', function(){ $rootScope.$broadcast('audio:ended', this); $scope.next(); });
+                $scope.audio.addEventListener('ended', function(){ $rootScope.$broadcast('audio:ended', this); $scope.next(true); });
 
                 // set track & play it
                 $rootScope.$on('audio:set', function(event, url, info) {

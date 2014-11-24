@@ -47,7 +47,7 @@ angular.module('gmusicPlayerApp')
             })
         }
 
-        $scope.moveInPlaylist = function(delta) {
+        $scope.moveInPlaylist = function(delta, dontLoopThrough) {
             var song = $rootScope.currentSong;
             if (!song) {
                 return;
@@ -63,7 +63,12 @@ angular.module('gmusicPlayerApp')
             })
 
             if (thisIndex != -1) {
-                var nextSong = plref[(thisIndex+delta)%plref.length];
+                var nextIndex = (thisIndex+delta)%plref.length;
+                if (dontLoopThrough && nextIndex != (thisIndex+delta)) {
+                    return;
+                }
+
+                var nextSong = plref[nextIndex];
 
                 GMusic.getStreamUrl(nextSong.id, function(url) {
                     $rootScope.$broadcast('audio:set', url, nextSong);
@@ -71,8 +76,8 @@ angular.module('gmusicPlayerApp')
             }
         }
 
-        $rootScope.$on('audio:next', function() {
-            $scope.moveInPlaylist(+1);
+        $rootScope.$on('audio:next', function(event, triggeredByEndEvent, loopStateText) {
+            $scope.moveInPlaylist(+1, triggeredByEndEvent && loopStateText != "all");
         });
         $rootScope.$on('audio:prev', function() {
             $scope.moveInPlaylist(-1);
