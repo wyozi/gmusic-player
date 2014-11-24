@@ -14,7 +14,7 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                     {text: 'all'},
                     {text: 'single'}
                 ];
-                $scope.loopState = 0;
+                $scope.loopState = 1;
 
                 $scope.currentTime = 0;
 
