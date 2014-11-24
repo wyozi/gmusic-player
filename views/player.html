@@ -1,12 +1,8 @@
 <div class="content-container">
     <div class="nav-container">
-        <form ng-submit="search()">
-            <div class="input-group" ng-controller="SearchCtrl">
-                <input type="text" class="form-control" ng-model="query" required>
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="search()">Search!</button>
-                </span>
-            </div><!-- /input-group -->
+        <form ng-controller="SearchCtrl" ng-submit="search()" class="searchform">
+            <input type="text" class="form-control" ng-model="query" required>
+            <input type="submit" value="Search">
         </form>
 
         <ul class="playlists" ng-controller="PlaylistsCtrl">

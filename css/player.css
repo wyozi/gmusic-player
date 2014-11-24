@@ -29,3 +29,14 @@ audio-player > div {
     text-align: center;
     margin-bottom: 8px;
 }
+
+.searchform {
+    display: flex;
+}
+.searchform > input {
+    flex: 1 1;
+}
+
+.searchform > input[type='text'] {
+    flex: 2 1;
+}
