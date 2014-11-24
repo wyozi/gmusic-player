@@ -1,5 +1,13 @@
 <div>
+    <div class="seekbar" ng-mousedown="seekBarMouseDown($event)" ng-mouseleave="seekBarResetDrag()" ng-mouseup="seekBarResetDrag()" ng-mousemove="seekBarDragged($event)">
+        <span ng-style="{'width': (currentTime / audio.duration)*100 + '%'}"></span>
+
+        <span ng-repeat="i in range(audio.buffered.length)"
+            ng-style="{'left': (audio.buffered.start(i) / audio.duration)*100 + '%', 'right': (1-(audio.buffered.end(i) / audio.duration))*100 + '%'}"></span>
+    </div>
+    <!--
     <input style="width: 100%" min="0" max="{{audio.duration}}" step="0.01" type="range" ng-model="currentTime" ng-change="updateCurrentTime()"/>
+    -->
 </div>
 <div style="display: flex">
     <div style="flex: 1 1 auto">

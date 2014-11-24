@@ -39,6 +39,8 @@ angular.module('gmusicPlayerApp')
             $scope.results.forEach(function(res) {
                 res.playlistRef = playlistRef;
             })
+
+            $scope.$apply();
         });
 
         $scope.setCurrentSong = function(song) {

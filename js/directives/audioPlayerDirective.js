@@ -73,10 +73,34 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                 $scope.audio.addEventListener('timeupdate', function() {
                     $scope.currentTime = $scope.audio.currentTime;
                     $scope.volume = $scope.audio.volume;
-                })
+                });
 
-                // update display of things - makes time-scrub work
-                setInterval(function(){ $scope.$apply(); }, 500);
+                // Seekbar stuff
+
+                function updateDraggedTime(e) {
+                    var seekbar = $(e.srcElement).closest(".seekbar");
+                    var frac = (e.pageX - seekbar.offset().left) / seekbar.width();
+                    $scope.currentDraggedTime = frac * $scope.audio.duration;
+                }
+
+                $scope.seekBarMouseDown = function(e) {
+                    updateDraggedTime(e);
+                }
+                $scope.seekBarResetDrag = function(e) {
+                    if ($scope.currentDraggedTime) {
+                        $scope.currentTime = $scope.currentDraggedTime;
+                        $scope.updateCurrentTime();
+                    }
+                    $scope.currentDraggedTime = undefined;
+                }
+                $scope.seekBarDragged = function(e) {
+                    if (e.which == 1 && $scope.currentDraggedTime) {
+                        updateDraggedTime(e);
+                    }
+                }
+                $scope.range = function(n) {
+                    return Array.apply(null, Array(n)).map(function (_, i) {return i;});
+                };
             },
 
             templateUrl: 'views/audioPlayerView.html'

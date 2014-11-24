@@ -5,6 +5,8 @@ angular.module('gmusicPlayerApp')
 
         $rootScope.$on('playlists:set', function(event, playlists) {
             $scope.playlists = playlists;
+            
+            $scope.$apply();
         })
 
         $scope.setPlaylistById = function(playlistId) {
