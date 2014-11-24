@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody class="playlist-songs">
-                    <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSong && currentSong.info.id == song.id}">
+                    <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSong && currentSong.id == song.id}">
                         <td><img src="{{ song.albumart }}" class="albumart"></td>
                         <td>{{ song.artist }}</td>
                         <td>{{ song.title }}</td>
