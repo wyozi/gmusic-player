@@ -1,0 +1,49 @@
+<div class="content-container">
+    <div class="nav-container">
+        <form ng-submit="search()">
+            <div class="input-group" ng-controller="SearchCtrl">
+                <input type="text" class="form-control" ng-model="query" required>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="search()">Search!</button>
+                </span>
+            </div><!-- /input-group -->
+        </form>
+
+        <ul class="playlists" ng-controller="PlaylistsCtrl">
+            <li ng-repeat="playlist in playlists">
+                <a href="#/playlists/{{playlist.id}}">{{ playlist.name }}</a>
+            </li>
+        </ul>
+    </div>
+    <div class="musicquery-container" ng-controller="MusicQueryCtrl">
+        <h3>
+            Results for
+            <button ng-repeat="query in queries" class="btn btn-info">{{ query }}</button>
+        </h3>
+
+        <div class="musicquery-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>AlbumArt</th>
+                        <th>Artist</th>
+                        <th>Title</th>
+                        <th>Album</th>
+                    </tr>
+                </thead>
+                <tbody class="playlist-songs">
+                    <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSong && currentSong.info.id == song.id}">
+                        <td><img src="{{ song.albumart }}" class="albumart"></td>
+                        <td>{{ song.artist }}</td>
+                        <td>{{ song.title }}</td>
+                        <td>{{ song.album }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <audio-player></audio-player>
+</div>
