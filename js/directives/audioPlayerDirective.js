@@ -73,6 +73,8 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                 $scope.audio.addEventListener('timeupdate', function() {
                     $scope.currentTime = $scope.audio.currentTime;
                     $scope.volume = $scope.audio.volume;
+
+                    $scope.$apply();
                 });
 
                 // Seekbar stuff
