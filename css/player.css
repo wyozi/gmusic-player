@@ -34,7 +34,24 @@ audio-player > div {
     text-align: center;
 }
 audio-player > div:first-child {
-    margin-bottom: 11px;
+    margin-bottom: 4px;
+}
+
+audio-player button {
+    width: 38px;
+    height: 38px;
+
+    background: none;
+    border: none;
+}
+
+audio-player button:hover {
+    color: blue;
+}
+
+
+audio-player button .grayed {
+    color: gray;
 }
 
 .searchform {

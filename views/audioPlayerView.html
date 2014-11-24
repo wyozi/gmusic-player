@@ -1,7 +1,7 @@
 <div>
     <div class="seekbar" ng-mousedown="seekBarMouseDown($event)" ng-mouseleave="seekBarResetDrag()" ng-mouseup="seekBarResetDrag()" ng-mousemove="seekBarDragged($event)">
         <span ng-style="{'width': ((currentDraggedTime || currentTime) / audio.duration)*100 + '%'}">
-            <span class="current-time">{{currentTime | minutesSeconds}} / {{audio.duration | minutesSeconds}}</span>
+            <span class="current-time">{{(currentDraggedTime || currentTime) | minutesSeconds}} / {{audio.duration | minutesSeconds}}</span>
         </span>
 
         <span ng-repeat="i in range(audio.buffered.length)"
@@ -22,9 +22,17 @@
     </div>
 
     <div style="flex: 1 1 auto">
-        <button ng-click="prev()">prev</button>
-        <button ng-click="playpause()">play/pause</button>
-        <button ng-click="next()">next</button>
-        <button ng-click="cycleLoopState()">loop {{ loopStates[loopState].text }}</button>
+        <button ng-click="prev()"><i class="fa fa-lg fa-backward"></i></button>
+        <button ng-click="playpause()">
+            <i class="fa fa-lg" ng-class="{'fa-play': audio.paused, 'fa-pause': !audio.paused}"></i>
+        </button>
+        <button ng-click="next()"><i class="fa fa-lg fa-forward"></i></button>
+        <button ng-click="cycleLoopState()">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x" ng-show="loopState == 2"></i>
+                <i class="fa fa-retweet fa-stack-1x" ng-class="{grayed: loopState == 0, 'fa-inverse': loopState == 2}"></i>
+            </span>
+
+        </button>
     </div>
 </div>
