@@ -35,7 +35,7 @@
             </form>
 
             <ul class="playlists" ng-controller="PlaylistsCtrl">
-                <li ng-repeat="playlist in playlists" ng-click="setPlaylist(playlist)">
+                <li ng-repeat="playlist in playlists">
                     <a href="#/playlists/{{playlist.id}}">{{ playlist.name }}</a>
                 </li>
             </ul>

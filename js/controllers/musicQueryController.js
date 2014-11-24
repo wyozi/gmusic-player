@@ -12,7 +12,7 @@ angular.module('gmusicPlayerApp')
             $scope.queries.push(query);
             $scope.results = $scope.results.concat(results);
 
-            var playlistRef = $scope.results.copy();
+            var playlistRef = $scope.results.slice();
             $scope.results.forEach(function(res) {
                 res.playlistRef = playlistRef;
             })
