@@ -48,8 +48,9 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                 }
 
                 angular.element($window).on('keydown', function(e) {
-                    if (e.keyCode == 32) {
+                    if (e.keyCode == 32 && e.target == document.body) {
                         $scope.playpause();
+                        e.preventDefault();
                     }
                 });
 
@@ -68,6 +69,7 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                     $scope.info = info;
 
                     $rootScope.currentSong = info;
+                    $scope.$apply();
                 });
 
                 $scope.audio.addEventListener('timeupdate', function() {
