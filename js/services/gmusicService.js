@@ -4,6 +4,7 @@ var fs = require("fs");
 var pm = new PlayMusic();
 
 function GMusic() {
+    globalGMusic = this;
 }
 
 GMusic.prototype.login = function(callback) {
@@ -25,7 +26,11 @@ function parseTrackObject(trackobj, trackid) {
         id: trackid,
 
         albumart: (trackobj.albumArtRef && trackobj.albumArtRef.length > 0) ? trackobj.albumArtRef[0].url : "",
+        albumid: trackobj.albumId,
+
         artist: trackobj.artist,
+        artistid: (trackobj.artistId && trackobj.artistId.length > 0) ? trackobj.artistId[0] : "",
+
         album: trackobj.album,
         title: trackobj.title
     }
@@ -73,6 +78,28 @@ GMusic.prototype.fetchPlaylistSongs = function(playlistid, callback) {
         }
 
 
+    });
+}
+
+GMusic.prototype.getAlbum = function(nid, callback) {
+    pm.getAlbum(nid, true, function(data) {
+        var album = {};
+
+        album.name = data.name;
+        album.tracks = data.tracks.map(function(o) { return parseTrackObject(o, o.nid); });
+
+        callback(album);
+    });
+}
+
+GMusic.prototype.getArtist = function(artistId, callback) {
+    pm.getArtist(artistId, false, 25, 0, function(data) {
+        var artist = {};
+        
+        artist.name = data.name;
+        artist.tracks = data.topTracks.map(function(o) { return parseTrackObject(o, o.nid); });
+
+        callback(artist);
     });
 }
 

@@ -31,8 +31,8 @@
                     <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSong && currentSong.id == song.id}">
                         <td><img src="{{ song.albumart }}" class="albumart"></td>
                         <td>{{ song.title }}</td>
-                        <td>{{ song.artist }}</td>
-                        <td>{{ song.album }}</td>
+                        <td><a href="#/artists/{{ song.artistid }}">{{ song.artist }}</a></td>
+                        <td><a href="#/albums/{{ song.albumid }}">{{ song.album }}</a></td>
                     </tr>
                 </tbody>
             </table>

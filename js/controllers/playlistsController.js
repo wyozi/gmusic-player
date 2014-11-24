@@ -5,7 +5,7 @@ angular.module('gmusicPlayerApp')
 
         $rootScope.$on('playlists:set', function(event, playlists) {
             $scope.playlists = playlists;
-            
+
             $scope.$apply();
         })
 
@@ -26,6 +26,34 @@ angular.module('gmusicPlayerApp')
 
             if (match) {
                 $scope.setPlaylistById(match[1]);
+            }
+        });
+
+        // TODO move albums and artists watches somewhere else
+
+        $scope.$watch(function() {
+            return $location.path();
+        }, function() {
+            var albumRegex = /\/albums\/([^ ]+)/;
+            var match = $location.path().match(albumRegex);
+
+            if (match) {
+                GMusic.getAlbum(match[1], function(data) {
+                    $rootScope.$broadcast('musicquery:setresults', 'album "' + data.name + '"', data.tracks);
+                });
+            }
+        });
+
+        $scope.$watch(function() {
+            return $location.path();
+        }, function() {
+            var artistRegex = /\/artists\/([^ ]+)/;
+            var match = $location.path().match(artistRegex);
+
+            if (match) {
+                GMusic.getArtist(match[1], function(data) {
+                    $rootScope.$broadcast('musicquery:setresults', 'artist "' + data.name + '"', data.tracks);
+                });
             }
         });
 
