@@ -73,3 +73,15 @@ audio-player > div:first-child {
     height: 3px;
     background-color: gray;
 }
+
+.seekbar .current-time {
+    position: absolute;
+    left: 2px;
+    top: 1px;
+
+    font-family: 'Consolas';
+    font-size: 12px;
+    color: gray;
+
+    white-space: nowrap;
+}

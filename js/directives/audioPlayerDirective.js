@@ -1,4 +1,20 @@
 angular.module('audioPlayer-directive', ['ngCookies'])
+    .filter('minutesSeconds', function() {
+        return function(seconds) {
+            if (!seconds) {
+                return '00:00';
+            }
+            var seconds = Math.round(+seconds);
+
+            var minutes = Math.floor(seconds / 60);
+            seconds = seconds - minutes*60;
+
+            if (minutes < 10) { minutes = '0' + minutes; }
+            if (seconds < 10) { seconds = '0' + seconds; }
+
+            return minutes + ':' + seconds;
+        }
+    })
     .directive('audioPlayer', ['$rootScope', '$cookies', '$window', function($rootScope, $cookies, $window) {
         return {
             restrict: 'E',

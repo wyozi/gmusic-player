@@ -14,7 +14,7 @@
     <div class="musicquery-container" ng-controller="MusicQueryCtrl">
         <h3>
             Results for
-            <button ng-repeat="query in queries" class="btn btn-info">{{ query }}</button>
+            <span ng-repeat="query in queries">{{ query }} </span>
         </h3>
 
         <div class="musicquery-list">
