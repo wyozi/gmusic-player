@@ -32,7 +32,9 @@ audio-play {
 
 audio-player > div {
     text-align: center;
-    margin-bottom: 8px;
+}
+audio-player > div:first-child {
+    margin-bottom: 11px;
 }
 
 .searchform {
