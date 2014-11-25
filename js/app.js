@@ -1,7 +1,6 @@
 angular.module('gmusicPlayerApp', [
     'ngResource',
     'ngRoute',
-    'ngCookies',
     'audioPlayer-directive',
     'gmusicService'
 ])

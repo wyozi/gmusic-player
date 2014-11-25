@@ -15,14 +15,14 @@ angular.module('audioPlayer-directive', ['ngCookies'])
             return minutes + ':' + seconds;
         }
     })
-    .directive('audioPlayer', ['$rootScope', '$cookies', '$window', function($rootScope, $cookies, $window) {
+    .directive('audioPlayer', ['$rootScope', '$window', function($rootScope, $window) {
         return {
             restrict: 'E',
             scope: {},
             controller: function($scope, $element) {
                 $scope.audio = new Audio();
 
-                $scope.audio.volume = $cookies.playervolume || 1;
+                $scope.audio.volume = localStorage.volume || 1;
                 $scope.volume = $scope.audio.volume;
 
                 $scope.loopStates = [
@@ -59,7 +59,7 @@ angular.module('audioPlayer-directive', ['ngCookies'])
                     $scope.audio.currentTime = $scope.currentTime;
                 }
                 $scope.updateVolume = function() {
-                    $cookies.playervolume = $scope.volume;
+                    localStorage.volume = $scope.volume;
                     $scope.audio.volume = $scope.volume;
                 }
 
