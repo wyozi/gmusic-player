@@ -2,6 +2,7 @@ angular.module('gmusicPlayerApp', [
     'ngResource',
     'ngRoute',
     'audioPlayer-directive',
+    'scrollToTopWhen-directive',
     'gmusicService'
 ])
     .config(['$routeProvider', function($routeProvider) {

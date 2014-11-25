@@ -1,22 +1,26 @@
 angular.module('gmusicPlayerApp')
-    .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', function($scope, $rootScope, GMusic) {
+    .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', '$timeout', function($scope, $rootScope, GMusic, $timeout) {
         $scope.queries = [];
         $scope.results = [];
 
         $rootScope.$on('musicquery:setresults', function(event, query, results, shouldAppend) {
-            if (!shouldAppend) {
-                $scope.queries = [];
-                $scope.results = [];
-            }
-            $scope.queries.push(query);
-            $scope.results = $scope.results.concat(results);
+            $timeout(function() {
+                if (!shouldAppend) {
+                    $scope.queries = [];
+                    $scope.results = [];
+                }
+                $scope.queries.push(query);
+                $scope.results = $scope.results.concat(results);
 
-            var playlistRef = $scope.results.slice();
-            $scope.results.forEach(function(res) {
-                res.playlistRef = playlistRef;
-            });
+                var playlistRef = $scope.results.slice();
+                $scope.results.forEach(function(res) {
+                    res.playlistRef = playlistRef;
+                });
 
-            $scope.$apply();
+                $scope.$apply();
+
+                $scope.$broadcast('music_query_updated');
+            })
         });
 
         $scope.setCurrentSong = function(song) {

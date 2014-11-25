@@ -1,4 +1,4 @@
-angular.module('audioPlayer-directive', ['ngCookies'])
+angular.module('audioPlayer-directive', [])
     .filter('minutesSeconds', function() {
         return function(seconds) {
             if (!seconds) {
