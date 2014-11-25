@@ -1,28 +1,37 @@
 var PlayMusic = require("playmusic");
+var NodeCache = require("node-cache");
 var fs = require("fs");
 
-var pm = new PlayMusic();
-
 function GMusic() {
+    this.pm = new PlayMusic();
+    this._cache = new NodeCache({stdTTL: 300, checkperiod: 0});
+
+    globalGMusic = this;
 }
 
-GMusic.prototype.login = function(callback) {
+GMusic.prototype.login = function(callback, errorcb) {
     var creds = JSON.parse(fs.readFileSync("credentials.txt", "utf8"));
 
-    pm.init({email: creds.email, password: creds.password}, function() {
+    this.pm.init({email: creds.email, password: creds.password}, function() {
         callback();
-    });
+    }, errorcb);
 }
 
-GMusic.prototype.fetchPlaylists = function(callback) {
-    pm.getPlayLists(function(data) {
-        callback(data.data.items);
-    });
+GMusic.prototype._checkCache = function(key, callback) {
+    var cachedItem = this._cache.get(key);
+    if (cachedItem[key] != undefined) {
+        callback(cachedItem[key]);
+        return true;
+    }
+    return false;
 }
 
+/**
+* Parses a track object returned by 'playmusic' to a simpler version
+*/
 GMusic.prototype._parseTrackObject = function(trackobj, trackid) {
     return {
-        id: trackid,
+        id: trackid || trackobj.nid,
 
         albumart: (trackobj.albumArtRef && trackobj.albumArtRef.length > 0) ? trackobj.albumArtRef[0].url : "",
         albumid: trackobj.albumId,
@@ -35,87 +44,153 @@ GMusic.prototype._parseTrackObject = function(trackobj, trackid) {
     }
 }
 
-GMusic.prototype.fetchPlaylistSongs = function(playlistid, callback) {
+GMusic.prototype.getPlaylists = function(callback, errorcb) {
     var that = this;
 
-    pm.getPlayListEntries(function(data) {
-        var rawPlaylistEntries = data.data.items.filter(function(entry) {
-            return entry.playlistId == playlistid;
-        });
+    if (!this._checkCache("playlists", callback)) {
+        this.pm.getPlayLists(function(data) {
+            that._cache.set("playlists", data.data.items);
+            callback(data.data.items);
+        }, errorcb);
+    }
+}
 
-        var allAccessEntries = rawPlaylistEntries.filter(function(e) { return e.track != undefined; }).map(function(entry) {
-            var track = entry.track;
-            return that._parseTrackObject(track, entry.trackId);
-        });
+GMusic.prototype.getPlaylist = function(playlistId, callback, errorcb) {
+    var that = this;
 
-        var customEntryTrackIds = rawPlaylistEntries.filter(function(e) { return e.track == undefined; }).map(function(e) {
-            return e.trackId;
-        });
+    var key = "playlists/" + playlistId;
 
-        // There are custom (self-uploaded) songs in this playlist, we need to query library
-        if (customEntryTrackIds && customEntryTrackIds.length >= 0) {
+    if (!this._checkCache(key, callback)) {
+        this.getPlaylists(function(playlists) {
+            for (var idx in playlists) {
+                var pl = playlists[idx];
+                if (pl.id == playlistId) {
+                    that._cache.set(key, pl);
+                    callback(pl);
+                    break;
+                }
+            }
+        }, errorcb);
+    }
+}
 
-            var rawPlaylistEntryPositions = {};
-            rawPlaylistEntries.forEach(function(o) {
-                rawPlaylistEntryPositions[o.trackId] = o.absolutePosition;
+GMusic.prototype._getCachedLibrary = function(callback, errorcb) {
+    var that = this;
+
+    if (!this._checkCache("library", callback)) {
+        this.pm.getLibrary(function(lib) {
+            that._cache.set("library", lib.data.items);
+            callback(lib.data.items);
+        }, errorcb);
+    }
+}
+
+GMusic.prototype.getPlaylistEntries = function(callback, errorcb) {
+    var that = this;
+
+    if (!this._checkCache("playlist-entries", callback)) {
+        this.pm.getPlayListEntries(function(data) {
+            that._cache.set("playlist-entries", data.data.items);
+            callback(data.data.items);
+        }, errorcb);
+    }
+}
+
+GMusic.prototype.getPlaylistSongs = function(playlistid, callback, errorcb) {
+    var that = this;
+
+    var key = "playlist-songs/" + playlistid;
+
+    if (!this._checkCache(key, callback)) {
+        this.getPlaylistEntries(function(entries) {
+            var rawPlaylistEntries = entries.filter(function(entry) {
+                return entry.playlistId == playlistid;
             });
 
-            pm.getLibrary(function(lib) {
-                var customEntries = lib.data.items.filter(function(e) {
-                    return customEntryTrackIds.indexOf(e.id) != -1;
-                }).map(function(e) {
-                    return that._parseTrackObject(e, e.id);
-                });
-
-                var allEntries = allAccessEntries.concat(customEntries).sort(function(a, b) {
-                    return rawPlaylistEntryPositions[a.id] - rawPlaylistEntryPositions[b.id];
-                });
-
-                callback(allEntries);
+            var allAccessEntries = rawPlaylistEntries.filter(function(e) { return e.track != undefined; }).map(function(entry) {
+                var track = entry.track;
+                return that._parseTrackObject(track, entry.trackId);
             });
-        }
-        else {
-            callback(allAccessEntries);
-        }
 
+            var customEntryTrackIds = rawPlaylistEntries.filter(function(e) { return e.track == undefined; }).map(function(e) {
+                return e.trackId;
+            });
 
-    });
+            // There are custom (self-uploaded) songs in this playlist, we need to query library
+            if (customEntryTrackIds && customEntryTrackIds.length >= 0) {
+
+                var rawPlaylistEntryPositions = {};
+                rawPlaylistEntries.forEach(function(o) {
+                    rawPlaylistEntryPositions[o.trackId] = o.absolutePosition;
+                });
+
+                that._getCachedLibrary(function(lib) {
+                    var customEntries = lib.filter(function(e) {
+                        return customEntryTrackIds.indexOf(e.id) != -1;
+                    }).map(function(e) {
+                        return that._parseTrackObject(e, e.id);
+                    });
+
+                    var allEntries = allAccessEntries.concat(customEntries).sort(function(a, b) {
+                        return rawPlaylistEntryPositions[a.id] - rawPlaylistEntryPositions[b.id];
+                    });
+
+                    that._cache.set(key, allEntries);
+                    callback(allEntries);
+                }, errorcb);
+            }
+            else {
+                that._cache.set(key, allAccessEntries);
+                callback(allAccessEntries);
+            }
+        }, errorcb);
+    }
 }
 
-GMusic.prototype.getAlbum = function(nid, callback) {
+GMusic.prototype.getAlbum = function(nid, callback, errorcb) {
     var that = this;
 
-    pm.getAlbum(nid, true, function(data) {
-        var album = {};
+    var key = "albums/" + nid;
 
-        album.name = data.name;
-        album.tracks = data.tracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
+    if (!this._checkCache(key, callback)) {
+        this.pm.getAlbum(nid, true, function(data) {
+            var album = {};
 
-        callback(album);
-    });
+            album.name = data.name;
+            album.tracks = data.tracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
+
+            that._cache.set(key, album);
+            callback(album);
+        }, errorcb);
+    }
 }
 
-GMusic.prototype.getArtist = function(artistId, callback) {
+GMusic.prototype.getArtist = function(artistId, callback, errorcb) {
     var that = this;
 
-    pm.getArtist(artistId, false, 25, 0, function(data) {
-        var artist = {};
+    var key = "artists/" + artistId;
 
-        artist.name = data.name;
-        artist.tracks = data.topTracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
+    if (!this._checkCache(key, callback)) {
+        this.pm.getArtist(artistId, false, 25, 0, function(data) {
+            var artist = {};
 
-        callback(artist);
-    });
+            artist.name = data.name;
+            artist.tracks = data.topTracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
+
+            that._cache.set(key, artist);
+            callback(artist);
+        }, errorcb);
+    }
 }
 
-GMusic.prototype.getStreamUrl = function(trackid, callback) {
-    pm.getStreamUrl(trackid, callback);
+GMusic.prototype.getStreamUrl = function(trackid, callback, errorcb) {
+    this.pm.getStreamUrl(trackid, callback, errorcb);
 }
 
-GMusic.prototype.search = function(query, callback) {
+GMusic.prototype.search = function(query, callback, errorcb) {
     var that = this;
 
-    pm.search(query, 25, function(data) {
+    this.pm.search(query, 25, function(data) {
         var songs = data.entries.sort(function(a, b) {
             return a.score < b.score;
         }).map(function(res) {
@@ -139,9 +214,7 @@ GMusic.prototype.search = function(query, callback) {
             return ret;
         });
         callback(songs);
-    }, function(err) {
-        console.log(err);
-    });
+    }, errorcb);
 }
 
 angular.module('gmusicService', []).service('GMusic', GMusic);

@@ -10,8 +10,12 @@ angular.module('gmusicPlayerApp')
         })
 
         $scope.setPlaylistById = function(playlistId) {
-            GMusic.fetchPlaylistSongs(playlistId, function(songs) {
-                $rootScope.$broadcast('musicquery:setresults', 'playlist "' + playlistId + '"', songs);
+            GMusic.getPlaylistSongs(playlistId, function(songs) {
+
+                GMusic.getPlaylist(playlistId, function(pl) {
+                    $rootScope.$broadcast('musicquery:setresults', 'playlist "' + (pl ? pl.name : playlistId) + '"', songs);
+                });
+
             });
         }
         $scope.setPlaylist = function(playlist) {

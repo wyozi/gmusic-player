@@ -1,27 +1,3 @@
-// TODO get rid of this ugly polyfill
-if (!Array.prototype.findIndex) {
-    Array.prototype.findIndex = function(predicate) {
-        if (this == null) {
-            throw new TypeError('Array.prototype.find called on null or undefined');
-        }
-        if (typeof predicate !== 'function') {
-            throw new TypeError('predicate must be a function');
-        }
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
-
-        for (var i = 0; i < length; i++) {
-            value = list[i];
-            if (predicate.call(thisArg, value, i, list)) {
-                return i;
-            }
-        }
-        return -1;
-    };
-}
-
 angular.module('gmusicPlayerApp')
     .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', function($scope, $rootScope, GMusic) {
         $scope.queries = [];
@@ -38,7 +14,7 @@ angular.module('gmusicPlayerApp')
             var playlistRef = $scope.results.slice();
             $scope.results.forEach(function(res) {
                 res.playlistRef = playlistRef;
-            })
+            });
 
             $scope.$apply();
         });
