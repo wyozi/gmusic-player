@@ -13,13 +13,17 @@ body {
     height: 32px;
 }
 
-.playlist-songs > tr.activesong td {
+.query-results > tr.activesong td {
     background-color: #C7F464;
 }
-
-.playlist-songs > tr:hover td {
-    background-color: #4ECDC4;
+.query-results > tr:hover td {
+    background-color: rgba(79, 208, 191, 0.38);
+}
+.query-results td[ng-click] {
     cursor: pointer;
+}
+.query-results td[ng-click]:hover {
+    background-color: rgb(79, 208, 191);
 }
 
 .playlists {
@@ -85,6 +89,7 @@ body {
 }
 .musicquery-list > table {
     width: 100%;
+    border-collapse: collapse;
 }
 
 .footer {

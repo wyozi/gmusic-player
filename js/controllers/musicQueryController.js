@@ -1,5 +1,5 @@
 angular.module('gmusicPlayerApp')
-    .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', '$timeout', function($scope, $rootScope, GMusic, $timeout) {
+    .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', '$timeout', '$location', function($scope, $rootScope, GMusic, $timeout, $location) {
         $scope.queries = [];
         $scope.results = [];
 
@@ -27,6 +27,10 @@ angular.module('gmusicPlayerApp')
             GMusic.getStreamUrl(song.id, function(url) {
                 $rootScope.$broadcast('audio:set', url, song);
             })
+        }
+
+        $scope.go = function(path) {
+            $location.path(path);
         }
 
         $scope.moveInPlaylist = function(delta, dontLoopThrough) {

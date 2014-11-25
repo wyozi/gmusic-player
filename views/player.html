@@ -18,7 +18,6 @@
         </h3>
 
         <div class="musicquery-list" scroll-to-top-when="music_query_updated">
-            <asd></asd>
             <table>
                 <thead>
                     <tr>
@@ -28,12 +27,12 @@
                         <th>Album</th>
                     </tr>
                 </thead>
-                <tbody class="playlist-songs">
-                    <tr ng-repeat="song in results" ng-click="setCurrentSong(song)" ng-class="{activesong: currentSong && currentSong.id == song.id}">
+                <tbody class="query-results">
+                    <tr ng-repeat="song in results" ng-class="{activesong: currentSong && currentSong.id == song.id}">
                         <td><img src="{{ song.albumart }}" class="albumart"></td>
-                        <td>{{ song.title }}</td>
-                        <td><a href="#/artists/{{ song.artistid }}">{{ song.artist }}</a></td>
-                        <td><a href="#/albums/{{ song.albumid }}">{{ song.album }}</a></td>
+                        <td ng-click="setCurrentSong(song)">{{ song.title }}</td>
+                        <td ng-click="go('/artists/' + song.artistid)">{{ song.artist }}</td>
+                        <td ng-click="go('/albums/' + song.albumid)">{{ song.album }}</td>
                     </tr>
                 </tbody>
             </table>
