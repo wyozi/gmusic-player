@@ -20,7 +20,7 @@ angular.module('gmusicPlayerApp')
                     }).map(function(obj) {
                         return obj.track;
                     });
-                    $rootScope.$broadcast('musicquery:setresults', 'search "' + query + '"', {
+                    $rootScope.$broadcast('musicquery:setresults', {
                         query: 'search "' + query + '"',
 
                         type: 'search',
