@@ -51,7 +51,12 @@ angular.module('gmusicPlayerApp')
 
             if (match) {
                 GMusic.getAlbum(match[1], function(data) {
-                    $rootScope.$broadcast('musicquery:setresults', 'album "' + data.name + '"', data.tracks);
+                    $rootScope.$broadcast('musicquery:setresults', {
+                        query: 'album "' + data.name + '"',
+
+                        type: 'album',
+                        songs: data.tracks
+                    });
                 });
             }
         });
@@ -64,7 +69,12 @@ angular.module('gmusicPlayerApp')
 
             if (match) {
                 GMusic.getArtist(match[1], function(data) {
-                    $rootScope.$broadcast('musicquery:setresults', 'artist "' + data.name + '"', data.tracks);
+                    $rootScope.$broadcast('musicquery:setresults', {
+                        query: 'artist "' + data.name + '"',
+
+                        type: 'artist',
+                        songs: data.tracks
+                    });
                 });
             }
         });
