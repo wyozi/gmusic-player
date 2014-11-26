@@ -6,7 +6,7 @@
         </form>
 
         <ul class="playlists" ng-controller="PlaylistsCtrl">
-            <li ng-repeat="playlist in playlists">
+            <li ng-repeat="playlist in playlists" drop-channel="songs" ui-on-drop="songDropped($data, playlist)">
                 <a href="#/playlists/{{playlist.id}}">{{ playlist.name }}</a>
             </li>
         </ul>
@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody class="query-results">
-                    <tr ng-repeat="song in results" ng-class="{activesong: currentSong && currentSong.id == song.id}">
+                    <tr ng-repeat="song in results" ng-class="{activesong: currentSong && currentSong.id == song.id}" nw-menu="openSongMenu(song, $menu)" ui-draggable="true" drag="song.id" drag-channel="songs">
                         <td><img src="{{ song.albumart }}" class="albumart"></td>
                         <td ng-click="setCurrentSong(song)">{{ song.title }}</td>
                         <td ng-click="go('/artists/' + song.artistid)">{{ song.artist }}</td>

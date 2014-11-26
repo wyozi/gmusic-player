@@ -1,4 +1,4 @@
-var PlayMusic = require("playmusic");
+var PlayMusic = require("../playmusic");
 var NodeCache = require("node-cache");
 var fs = require("fs");
 
@@ -145,6 +145,18 @@ GMusic.prototype.getPlaylistSongs = function(playlistid, callback, errorcb) {
             }
         }, errorcb);
     }
+}
+
+GMusic.prototype.addSongToPlaylist = function(songId, playlistId, success, errorcb) {
+    var that = this;
+
+    this.pm.addTrackToPlaylist(playlistId, songId, function(data) {
+        // Invalidate playlist entry cache, so next time we get playlist entries, the new song will be there
+        that._cache.del("playlist-entries");
+        that._cache.del("playlist-songs/" + playlistId);
+
+        that.pm.success(success, data);
+    }, errorcb);
 }
 
 GMusic.prototype.getAlbum = function(nid, callback, errorcb) {

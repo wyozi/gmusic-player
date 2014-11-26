@@ -22,6 +22,10 @@ angular.module('gmusicPlayerApp')
             $scope.setPlaylistById(playlist.id);
         }
 
+        $scope.songDropped = function(data, playlist) {
+            GMusic.addSongToPlaylist(data, playlist.id);
+        }
+
         $scope.$watch(function() {
             return $location.path();
         }, function() {

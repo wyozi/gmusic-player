@@ -33,6 +33,10 @@ angular.module('gmusicPlayerApp')
             $location.path(path);
         }
 
+        $scope.openSongMenu = function(song, menu) {
+            //menu.append(new gui.MenuItem({ label: 'Item A' }));
+        }
+
         $scope.moveInPlaylist = function(delta, dontLoopThrough) {
             var song = $rootScope.currentSong;
             if (!song) {

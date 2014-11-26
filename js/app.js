@@ -1,5 +1,7 @@
 angular.module('gmusicPlayerApp', [
     'ngRoute',
+    'ang-drag-drop',
+    'nw-menu-directive',
     'audioPlayer-directive',
     'scrollToTopWhen-directive',
     'gmusicService'
