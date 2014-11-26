@@ -13,7 +13,13 @@ angular.module('gmusicPlayerApp')
             GMusic.getPlaylistSongs(playlistId, function(songs) {
 
                 GMusic.getPlaylist(playlistId, function(pl) {
-                    $rootScope.$broadcast('musicquery:setresults', 'playlist "' + (pl ? pl.name : playlistId) + '"', songs);
+                    $rootScope.$broadcast('musicquery:setresults', {
+                        query: 'songs in playlist "' + (pl ? pl.name : playlistId) + '"',
+
+                        type: 'playlist',
+                        playlistId: playlistId,
+                        songs: songs
+                    });
                 });
 
             });

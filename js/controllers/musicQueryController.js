@@ -3,18 +3,13 @@ angular.module('gmusicPlayerApp')
         $scope.queries = [];
         $scope.results = [];
 
-        $rootScope.$on('musicquery:setresults', function(event, query, results, shouldAppend) {
+        $rootScope.$on('musicquery:setresults', function(event, data) {
             $timeout(function() {
-                if (!shouldAppend) {
-                    $scope.queries = [];
-                    $scope.results = [];
-                }
-                $scope.queries.push(query);
-                $scope.results = $scope.results.concat(results);
+                $scope.queries = [data.query];
+                $scope.results = data.songs;
 
-                var playlistRef = $scope.results.slice();
                 $scope.results.forEach(function(res) {
-                    res.playlistRef = playlistRef;
+                    res.playlistRef = data;
                 });
 
                 $scope.$apply();
@@ -48,17 +43,21 @@ angular.module('gmusicPlayerApp')
                 return;
             }
 
-            var thisIndex = plref.findIndex(function(s) {
-                return s.id == song.id;
-            })
+            var thisIndex = -1;
+            for (var i = 0;i < plref.songs.length; i++) {
+                if (plref.songs[i].id == song.id) {
+                    thisIndex = i;
+                    break;
+                }
+            }
 
             if (thisIndex != -1) {
-                var nextIndex = (thisIndex+delta)%plref.length;
+                var nextIndex = (thisIndex+delta)%plref.songs.length;
                 if (dontLoopThrough && nextIndex != (thisIndex+delta)) {
                     return;
                 }
 
-                var nextSong = plref[nextIndex];
+                var nextSong = plref.songs[nextIndex];
 
                 GMusic.getStreamUrl(nextSong.id, function(url) {
                     $rootScope.$broadcast('audio:set', url, nextSong);

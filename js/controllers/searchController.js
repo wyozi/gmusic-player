@@ -20,7 +20,13 @@ angular.module('gmusicPlayerApp')
                     }).map(function(obj) {
                         return obj.track;
                     });
-                    $rootScope.$broadcast('musicquery:setresults', 'search "' + query + '"', onlyTracks);
+                    $rootScope.$broadcast('musicquery:setresults', 'search "' + query + '"', {
+                        query: 'search "' + query + '"',
+
+                        type: 'search',
+                        searchQuery: query,
+                        songs: onlyTracks
+                    });
                 });
             }
         });
