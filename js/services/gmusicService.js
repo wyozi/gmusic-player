@@ -1,4 +1,4 @@
-var PlayMusic = require("../playmusic");
+var PlayMusic = require("playmusic");
 var NodeCache = require("node-cache");
 var fs = require("fs");
 
