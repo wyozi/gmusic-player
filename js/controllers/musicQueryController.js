@@ -29,7 +29,35 @@ angular.module('gmusicPlayerApp')
         }
 
         $scope.openSongMenu = function(song, menu) {
-            //menu.append(new gui.MenuItem({ label: 'Item A' }));
+            var plref = song.playlistRef;
+            if (plref && plref.type == "playlist") {
+                menu.append(new gui.MenuItem({ label: 'Song ' + song.id }));
+                menu.append(new gui.MenuItem({ label: 'Playlist ' + plref.playlistId }));
+                menu.append(new gui.MenuItem({ type: 'separator' }));
+                menu.append(new gui.MenuItem({
+                    label: 'Remove from playlist',
+                    click: function() {
+                        GMusic.removeSongFromPlaylist(song.id, plref.playlistId, function(wasRemoved) {
+
+                            if (wasRemoved) {
+                                // We need to refresh the playlist here. This is really awkward. TODO create utility function for this
+
+                                GMusic.getPlaylistSongs(plref.playlistId, function(songs) {
+                                    GMusic.getPlaylist(plref.playlistId, function(pl) {
+                                        $rootScope.$broadcast('musicquery:setresults', {
+                                            query: 'songs in playlist "' + (pl ? pl.name : plref.playlistId) + '"',
+
+                                            type: 'playlist',
+                                            playlistId: plref.playlistId,
+                                            songs: songs
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                    }
+                }));
+            }
         }
 
         $scope.moveInPlaylist = function(delta, dontLoopThrough) {

@@ -150,12 +150,34 @@ GMusic.prototype.getPlaylistSongs = function(playlistid, callback, errorcb) {
 GMusic.prototype.addSongToPlaylist = function(songId, playlistId, success, errorcb) {
     var that = this;
 
-    this.pm.addTrackToPlaylist(playlistId, songId, function(data) {
+    this.pm.addTrackToPlayList(songId, playlistId, function(data) {
         // Invalidate playlist entry cache, so next time we get playlist entries, the new song will be there
         that._cache.del("playlist-entries");
         that._cache.del("playlist-songs/" + playlistId);
 
         that.pm.success(success, data);
+    }, errorcb);
+}
+
+GMusic.prototype.removeSongFromPlaylist = function(songId, playlistId, success, errorcb) {
+    var that = this;
+
+    // Oh boy, we need to find playlist entry of the song
+    this.getPlaylistEntries(function(entries) {
+        var wasRemoved = false;
+
+        entries.filter(function(e) {
+            return e.trackId == songId && e.playlistId == playlistId;
+        }).forEach(function(e) {
+            that.pm.removePlayListEntry(e.id);
+            wasRemoved = true;
+        });
+
+        // Invalidate playlist entry cache, so next time we get playlist entries, the song will no longer be there
+        that._cache.del("playlist-entries");
+        that._cache.del("playlist-songs/" + playlistId);
+
+        that.pm.success(success, {removed: wasRemoved});
     }, errorcb);
 }
 

@@ -11,7 +11,6 @@ angular.module('gmusicPlayerApp')
 
         $scope.setPlaylistById = function(playlistId) {
             GMusic.getPlaylistSongs(playlistId, function(songs) {
-
                 GMusic.getPlaylist(playlistId, function(pl) {
                     $rootScope.$broadcast('musicquery:setresults', {
                         query: 'songs in playlist "' + (pl ? pl.name : playlistId) + '"',
@@ -21,7 +20,6 @@ angular.module('gmusicPlayerApp')
                         songs: songs
                     });
                 });
-
             });
         }
         $scope.setPlaylist = function(playlist) {
