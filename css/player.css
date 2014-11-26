@@ -79,7 +79,7 @@ audio-player button .grayed {
 }
 
 .seekbar span:first-child {
-    background-color: cyan;
+    background-color: rgb(79, 208, 191);
     height: 15px;
     width: 0px;
 }
