@@ -66,6 +66,8 @@ angular.module('audioPlayer-directive', [])
                 angular.element($window).on('keydown', function(e) {
                     if (e.keyCode == 32 && e.target == document.body) {
                         $scope.playpause();
+                        $scope.$apply();
+                        
                         e.preventDefault();
                     }
                 });

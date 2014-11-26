@@ -62,7 +62,7 @@ body {
 
 .nav-container {
     float: left;
-    width: 300px;
+    width: 250px;
     margin: 0;
     position: relative;
 
@@ -70,7 +70,7 @@ body {
 }
 .musicquery-container {
     margin: 0;
-    margin-left: 300px;
+    margin-left: 250px;
     position: relative;
 
     height: 100%;
