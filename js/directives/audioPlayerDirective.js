@@ -1,3 +1,38 @@
+
+// Source: http://blog.pearce.org.nz/2014/02/how-to-prefetch-videoaudio-files-for.html
+function prefetch_file(url,
+    fetched_callback,
+    progress_callback,
+    error_callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob";
+
+    xhr.addEventListener("load", function () {
+        if (xhr.status === 200) {
+            var URL = window.URL || window.webkitURL;
+            var blob_url = URL.createObjectURL(xhr.response);
+            fetched_callback(blob_url);
+        } else {
+            error_callback();
+        }
+    }, false);
+
+    var prev_pc = 0;
+    xhr.addEventListener("progress", function(event) {
+
+        if (event.lengthComputable) {
+            var pc = Math.round((event.loaded / event.total) * 100);
+            if (pc != prev_pc) {
+                prev_pc = pc;
+                progress_callback(pc);
+            }
+        }
+    });
+    xhr.send();
+}
+
+
 angular.module('audioPlayer-directive', [])
     .filter('minutesSeconds', function() {
         return function(seconds) {
@@ -67,7 +102,7 @@ angular.module('audioPlayer-directive', [])
                     if (e.keyCode == 32 && e.target == document.body) {
                         $scope.playpause();
                         $scope.$apply();
-                        
+
                         e.preventDefault();
                     }
                 });
@@ -81,8 +116,27 @@ angular.module('audioPlayer-directive', [])
 
                 // set track & play it
                 $rootScope.$on('audio:set', function(event, url, info) {
-                    $scope.audio.src = url;
-                    $scope.audio.play();
+
+                    var shouldPrefetch = false;
+
+                    if (shouldPrefetch) {
+                        $scope.audio.pause();
+
+                        prefetch_file(url, function(blob_url) {
+                            $scope.audio.src = blob_url;
+                            $scope.audio.play();
+                        }, function(prog, responseSize) {
+                            $scope.load_progress = prog;
+                            $scope.load_respsize = responseSize;
+                            $scope.$apply();
+                        }, function(err) {
+                            console.error(err);
+                        })
+                    }
+                    else {
+                        $scope.audio.src = url;
+                        $scope.audio.play();
+                    }
 
                     $scope.info = info;
 
