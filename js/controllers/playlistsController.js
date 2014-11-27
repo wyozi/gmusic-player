@@ -10,6 +10,8 @@ angular.module('gmusicPlayerApp')
         })
 
         $scope.setPlaylistById = function(playlistId) {
+            $rootScope.$broadcast('musicquery:querystarted');
+            
             GMusic.getPlaylistSongs(playlistId, function(songs) {
                 GMusic.getPlaylist(playlistId, function(pl) {
                     $rootScope.$broadcast('musicquery:setresults', {
@@ -42,6 +44,8 @@ angular.module('gmusicPlayerApp')
         });
 
         // TODO move albums and artists watches somewhere else
+        // Probably eventually there needs to be custom views for albums, artists, searches etc
+        // And thsi stuff should be moved to app.js routing
 
         $scope.$watch(function() {
             return $location.path();
@@ -50,6 +54,8 @@ angular.module('gmusicPlayerApp')
             var match = $location.path().match(albumRegex);
 
             if (match) {
+                $rootScope.$broadcast('musicquery:querystarted');
+
                 GMusic.getAlbum(match[1], function(data) {
                     $rootScope.$broadcast('musicquery:setresults', {
                         query: 'album "' + data.name + '"',
@@ -68,6 +74,8 @@ angular.module('gmusicPlayerApp')
             var match = $location.path().match(artistRegex);
 
             if (match) {
+                $rootScope.$broadcast('musicquery:querystarted');
+
                 GMusic.getArtist(match[1], function(data) {
                     $rootScope.$broadcast('musicquery:setresults', {
                         query: 'artist "' + data.name + '"',

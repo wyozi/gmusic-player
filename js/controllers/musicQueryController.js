@@ -3,6 +3,12 @@ angular.module('gmusicPlayerApp')
         $scope.queries = [];
         $scope.results = [];
 
+        $rootScope.$on('musicquery:querystarted', function(event) {
+            $scope.loading = true;
+
+            $scope.$apply();
+        })
+
         $rootScope.$on('musicquery:setresults', function(event, data) {
             $timeout(function() {
                 $scope.queries = [data.query];
@@ -11,6 +17,8 @@ angular.module('gmusicPlayerApp')
                 $scope.results.forEach(function(res) {
                     res.playlistRef = data;
                 });
+
+                $scope.loading = false;
 
                 $scope.$apply();
 

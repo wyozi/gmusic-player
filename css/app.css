@@ -92,6 +92,29 @@ body {
     border-collapse: collapse;
 }
 
+.musicquery-overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: rgba(0, 0, 0, 0.32);
+}
+
+.musicquery-overlay > div {
+    width: 150px;
+    height: 50px;
+    background-color: rgb(206, 255, 202);
+    text-align: center;
+    line-height: 50px;
+    border-radius: 10px;
+}
+
 .footer {
     position: absolute;
     bottom: 0px;

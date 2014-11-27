@@ -14,6 +14,8 @@ angular.module('gmusicPlayerApp')
             if (match) {
                 var query = match[1];
 
+                $rootScope.$broadcast('musicquery:querystarted');
+
                 GMusic.search(query, function(results) {
                     var onlyTracks = results.filter(function(obj) {
                         return obj.type == "track";
