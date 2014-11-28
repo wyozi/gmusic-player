@@ -25,16 +25,21 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     background: #ccc;
 }
 
-audio-play {
+audio-player {
     -webkit-user-select: none;
     -webkit-user-drag: none;
+
+    display: flex;
+    flex-direction: column;
 }
 
 audio-player > div {
     text-align: center;
-}
-audio-player > div:first-child {
-    margin-bottom: 4px;
+    
+    align-items: center;
+    justify-content: center;
+
+    flex: 1;
 }
 
 audio-player button {

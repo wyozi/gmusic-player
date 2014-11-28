@@ -50,6 +50,8 @@ angular.module('gmusicPlayerApp')
                             if (wasRemoved) {
                                 // We need to refresh the playlist here. This is really awkward. TODO create utility function for this
 
+                                $rootScope.$broadcast('musicquery:querystarted');
+                                
                                 GMusic.getPlaylistSongs(plref.playlistId, function(songs) {
                                     GMusic.getPlaylist(plref.playlistId, function(pl) {
                                         $rootScope.$broadcast('musicquery:setresults', {
