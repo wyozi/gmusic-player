@@ -98,6 +98,27 @@ angular.module('audioPlayer-directive', [])
                     $scope.$apply();
                 });
 
+                $scope.audio.addEventListener('error', function() {
+                    var err = $scope.audio.error;
+                    //if (errid == 2) {
+                        var src = $scope.audio.src;
+                        var time = $scope.audio.currentTime;
+
+                        $scope.audio.src = src + "&cachek=" + new Date().getTime();
+
+                        var setTimeFunc = function() {
+                            $scope.audio.currentTime = time;
+                            $scope.audio.play();
+
+                            console.log("Set currentTime to ", time, " (real : ", $scope.audio.currentTime, "; dur: ", $scope.audio.duration, ")");
+                            $scope.audio.removeEventListener('canplay', setTimeFunc);
+                        };
+                        $scope.audio.addEventListener('canplay', setTimeFunc);
+
+                        console.log("Reloading audio due to error: ", err);
+                    //}
+                })
+
                 // Seekbar stuff
 
                 function updateDraggedTime(e) {

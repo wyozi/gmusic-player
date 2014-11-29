@@ -42,6 +42,7 @@ function httpListener(req, res) {
         if (cachedMusic[songId] != undefined) {
             var buf = cachedMusic[songId];
 
+            console.log("Using cached " + songId + " (len: " + buf.length + ")");
             var header = {};
 
             header['Content-Type'] = 'audio/mpeg';
@@ -63,17 +64,24 @@ function httpListener(req, res) {
                 header["Content-Length"]= (end-start)+1;
                 header["Connection"] = "close";
 
+                var sliced = buf.slice(start, end);
+
                 res.writeHead(206, header);
-                res.write(buf.slice(start, end), "binary");
+                res.write(sliced, "binary");
+                res.end();
             }
             else {
                 res.writeHead(200, header);
                 res.write(buf, "binary");
+                res.end();
             }
         }
         else {
             // Music not cached, let's fetch it
             var buf = bl();
+
+            // we can set cache here, it is stored by reference anyway
+            MusicCache.set(songId, buf);
 
             var x = request({url: songUrl, encoding: null});
 
@@ -98,7 +106,6 @@ function httpListener(req, res) {
                     console.log("on'end' returned buf with 0 length for " + songId + ", not caching")
                 }
                 else {
-                    MusicCache.set(songId, buf);
                     console.log("Cached song " + songId + " (len: " + buf.length + ")");
                 }
                 res.end();
