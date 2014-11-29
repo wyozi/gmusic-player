@@ -211,11 +211,17 @@ GMusic.prototype.getArtist = function(artistId, callback, errorcb) {
     var key = "artists/" + artistId;
 
     if (!this._checkCache(key, callback)) {
-        this.pm.getArtist(artistId, false, 25, 0, function(data) {
+        this.pm.getArtist(artistId, true, 10, 0, function(data) {
             var artist = {};
 
+            artist.albums = data.albums.map(function(o) {
+                return {id: o.albumId, art: o.albumArtRef, name: o.name, year: o.year}
+            }).sort(function(a, b) {
+                return b.year - a.year;
+            });
+
             artist.name = data.name;
-            artist.tracks = data.topTracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
+            artist.topTracks = data.topTracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
 
             that._cache.set(key, artist);
             callback(artist);

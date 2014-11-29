@@ -57,7 +57,8 @@ angular.module('gmusicPlayerApp')
             $timeout(function() {
                 $scope.$apply(function() {
                     $scope.artist = artist;
-                    $scope.songs = artist.tracks;
+                    $scope.albums = artist.albums;
+                    $scope.songs = artist.topTracks;
                     $scope.songContext = {songs: artist.tracks};
 
                     $scope.$parent.loading = false;
