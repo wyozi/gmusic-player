@@ -1,37 +1,4 @@
-
-// Source: http://blog.pearce.org.nz/2014/02/how-to-prefetch-videoaudio-files-for.html
-function prefetch_file(url,
-    fetched_callback,
-    progress_callback,
-    error_callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.responseType = "blob";
-
-    xhr.addEventListener("load", function () {
-        if (xhr.status === 200) {
-            var URL = window.URL || window.webkitURL;
-            var blob_url = URL.createObjectURL(xhr.response);
-            fetched_callback(blob_url);
-        } else {
-            error_callback();
-        }
-    }, false);
-
-    var prev_pc = 0;
-    xhr.addEventListener("progress", function(event) {
-
-        if (event.lengthComputable) {
-            var pc = Math.round((event.loaded / event.total) * 100);
-            if (pc != prev_pc) {
-                prev_pc = pc;
-                progress_callback(pc);
-            }
-        }
-    });
-    xhr.send();
-}
-
+var querystring = require('querystring');
 
 angular.module('audioPlayer-directive', [])
     .filter('minutesSeconds', function() {
@@ -83,7 +50,6 @@ angular.module('audioPlayer-directive', [])
                     $rootScope.$broadcast('audio:prev');
                 };
 
-                // tell audio element to play/pause, you can also use $scope.audio.play() or $scope.audio.pause();
                 $scope.playpause = function() { var a = $scope.audio.paused ? $scope.audio.play() : $scope.audio.pause(); };
 
                 $scope.cycleLoopState = function() {
@@ -107,36 +73,17 @@ angular.module('audioPlayer-directive', [])
                     }
                 });
 
-
-                // listen for audio-element events, and broadcast stuff
                 $scope.audio.addEventListener('play', function(){ $rootScope.$broadcast('audio:play', this); });
                 $scope.audio.addEventListener('pause', function(){ $rootScope.$broadcast('audio:pause', this); });
                 $scope.audio.addEventListener('timeupdate', function(){ $rootScope.$broadcast('audio:time', this); });
                 $scope.audio.addEventListener('ended', function(){ $rootScope.$broadcast('audio:ended', this); $scope.next(true); });
 
-                // set track & play it
                 $rootScope.$on('audio:set', function(event, url, info) {
-
-                    var shouldPrefetch = false;
-
-                    if (shouldPrefetch) {
-                        $scope.audio.pause();
-
-                        prefetch_file(url, function(blob_url) {
-                            $scope.audio.src = blob_url;
-                            $scope.audio.play();
-                        }, function(prog, responseSize) {
-                            $scope.load_progress = prog;
-                            $scope.load_respsize = responseSize;
-                            $scope.$apply();
-                        }, function(err) {
-                            console.error(err);
-                        })
-                    }
-                    else {
-                        $scope.audio.src = url;
-                        $scope.audio.play();
-                    }
+                    $scope.audio.src = "http://localhost:" + (MusicStreamServerPort || 8080) + "/?" + querystring.stringify({
+                        songId: info.id,
+                        songUrl: new Buffer(url).toString('base64')
+                    });
+                    $scope.audio.play();
 
                     $scope.info = info;
 
