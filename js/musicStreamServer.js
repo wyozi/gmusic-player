@@ -61,10 +61,13 @@ function httpListener(req, res) {
 
                 header["Content-Range"] = "bytes " + start + "-" + end + "/" + (total);
                 header["Accept-Ranges"] = "bytes";
-                header["Content-Length"]= (end-start)+1;
                 header["Connection"] = "close";
 
                 var sliced = buf.slice(start, end);
+
+                if (sliced.length != header["Content-Length"]) {
+                    header["Content-Length"] = sliced.length;
+                }
 
                 res.writeHead(206, header);
                 res.write(sliced, "binary");
