@@ -39,6 +39,8 @@ angular.module('gmusicPlayerApp')
             $timeout(function() {
                 $scope.$apply(function() {
                     $scope.songs = songs;
+                    $scope.songContext = {songs: songs};
+
                     $scope.$parent.loading = false;
                 });
             });
@@ -56,6 +58,7 @@ angular.module('gmusicPlayerApp')
                 $scope.$apply(function() {
                     $scope.artist = artist;
                     $scope.songs = artist.tracks;
+                    $scope.songContext = {songs: artist.tracks};
 
                     $scope.$parent.loading = false;
                 });
@@ -74,6 +77,7 @@ angular.module('gmusicPlayerApp')
                 $scope.$apply(function() {
                     $scope.album = album;
                     $scope.songs = album.tracks;
+                    $scope.songContext = {songs: album.tracks};
 
                     $scope.$parent.loading = false;
                 });
@@ -97,6 +101,7 @@ angular.module('gmusicPlayerApp')
             $timeout(function() {
                 $scope.$apply(function() {
                     $scope.songs = onlyTracks;
+                    $scope.songContext = {songs: onlyTracks};
 
                     $scope.$parent.loading = false;
                 });

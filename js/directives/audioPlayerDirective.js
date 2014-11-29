@@ -78,7 +78,10 @@ angular.module('audioPlayer-directive', [])
                 $scope.audio.addEventListener('timeupdate', function(){ $rootScope.$broadcast('audio:time', this); });
                 $scope.audio.addEventListener('ended', function(){ $rootScope.$broadcast('audio:ended', this); $scope.next(true); });
 
-                $rootScope.$on('audio:set', function(event, url, info) {
+                $rootScope.$on('audio:set', function(event, data) {
+                    var url = data.url;
+                    var info = data.info;
+
                     $scope.audio.src = "http://localhost:" + (MusicStreamServerPort || 8080) + "/?" + querystring.stringify({
                         songId: info.id,
                         songUrl: new Buffer(url).toString('base64')
@@ -87,7 +90,7 @@ angular.module('audioPlayer-directive', [])
 
                     $scope.info = info;
 
-                    $rootScope.currentSong = info;
+                    $rootScope.currentSong = data;
                     $scope.$apply();
                 });
 

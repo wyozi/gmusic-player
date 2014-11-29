@@ -1,8 +1,13 @@
 angular.module('gmusicPlayerApp')
     .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', '$timeout', '$location', function($scope, $rootScope, GMusic, $timeout, $location) {
-        $scope.setCurrentSong = function(song) {
+        $scope.setCurrentSong = function(song, context) {
             GMusic.getStreamUrl(song.id, function(url) {
-                $rootScope.$broadcast('audio:set', url, song);
+                $rootScope.$broadcast('audio:set', {
+                    url: url,
+                    info: song,
+
+                    context: context //an array of songs. Eg the playlist or album the song was played from. Can be null
+                });
             })
         }
 
@@ -16,29 +21,33 @@ angular.module('gmusicPlayerApp')
                 return;
             }
 
-            var plref = song.playlistRef;
-            if (!plref) {
+            var context = song.context;
+            if (!context) {
                 return;
             }
 
             var thisIndex = -1;
-            for (var i = 0;i < plref.songs.length; i++) {
-                if (plref.songs[i].id == song.id) {
+            for (var i = 0;i < context.songs.length; i++) {
+                if (context.songs[i].id == song.info.id) {
                     thisIndex = i;
                     break;
                 }
             }
 
             if (thisIndex != -1) {
-                var nextIndex = (thisIndex+delta)%plref.songs.length;
+                var nextIndex = (thisIndex+delta)%context.songs.length;
                 if (dontLoopThrough && nextIndex != (thisIndex+delta)) {
                     return;
                 }
 
-                var nextSong = plref.songs[nextIndex];
+                var nextSong = context.songs[nextIndex];
 
                 GMusic.getStreamUrl(nextSong.id, function(url) {
-                    $rootScope.$broadcast('audio:set', url, nextSong);
+                    $rootScope.$broadcast('audio:set', {
+                        url: url,
+                        info: nextSong,
+                        context: context
+                    });
                 })
             }
         }
