@@ -37,9 +37,10 @@ angular.module('gmusicPlayerApp')
         }
 
         $scope.openSongMenu = function(song, menu) {
+            menu.append(new gui.MenuItem({ label: 'Song ' + song.id }));
+            
             var plref = song.playlistRef;
             if (plref && plref.type == "playlist") {
-                menu.append(new gui.MenuItem({ label: 'Song ' + song.id }));
                 menu.append(new gui.MenuItem({ label: 'Playlist ' + plref.playlistId }));
                 menu.append(new gui.MenuItem({ type: 'separator' }));
                 menu.append(new gui.MenuItem({

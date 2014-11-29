@@ -61,7 +61,6 @@ function httpListener(req, res) {
                 header["Content-Range"] = "bytes " + start + "-" + end + "/" + (total);
                 header["Accept-Ranges"] = "bytes";
                 header["Content-Length"]= (end-start)+1;
-                header['Transfer-Encoding'] = 'chunked';
                 header["Connection"] = "close";
 
                 res.writeHead(206, header);
@@ -84,7 +83,6 @@ function httpListener(req, res) {
                     'content-length': response.headers['content-length'],
                     'content-range': 'bytes 0-' + (response.headers['content-length']-1) + '/' + response.headers['content-length'],
                     'accept-ranges': 'bytes',
-                    'transfer-encoding': 'chunked',
                     'connection': 'close'
                 });
             });
