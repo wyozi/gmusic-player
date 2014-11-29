@@ -1,6 +1,7 @@
 var PlayMusic = require("playmusic");
 var NodeCache = require("node-cache");
 var fs = require("fs");
+var addEvents = require("add-events");
 
 function GMusic() {
     this.pm = new PlayMusic();
@@ -9,11 +10,16 @@ function GMusic() {
     globalGMusic = this;
 }
 
+addEvents(GMusic, ['loggedIn']);
+
 GMusic.prototype.login = function(callback, errorcb) {
+    var that = this;
+
     var creds = JSON.parse(fs.readFileSync("credentials.txt", "utf8"));
 
     this.pm.init({email: creds.email, password: creds.password}, function() {
         callback();
+        that._emit('loggedIn');
     }, errorcb);
 }
 

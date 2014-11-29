@@ -1,31 +1,5 @@
 angular.module('gmusicPlayerApp')
     .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', '$timeout', '$location', function($scope, $rootScope, GMusic, $timeout, $location) {
-        $scope.queries = [];
-        $scope.results = [];
-
-        $rootScope.$on('musicquery:querystarted', function(event) {
-            $scope.loading = true;
-
-            $scope.$apply();
-        })
-
-        $rootScope.$on('musicquery:setresults', function(event, data) {
-            $timeout(function() {
-                $scope.queries = [data.query];
-                $scope.results = data.songs;
-
-                $scope.results.forEach(function(res) {
-                    res.playlistRef = data;
-                });
-
-                $scope.loading = false;
-
-                $scope.$apply();
-
-                $scope.$broadcast('music_query_updated');
-            })
-        });
-
         $scope.setCurrentSong = function(song) {
             GMusic.getStreamUrl(song.id, function(url) {
                 $rootScope.$broadcast('audio:set', url, song);
@@ -34,29 +8,6 @@ angular.module('gmusicPlayerApp')
 
         $scope.go = function(path) {
             $location.path(path);
-        }
-
-        $scope.openSongMenu = function(song, menu) {
-            menu.append(new gui.MenuItem({ label: 'Song ' + song.id }));
-            
-            var plref = song.playlistRef;
-            if (plref && plref.type == "playlist") {
-                menu.append(new gui.MenuItem({ label: 'Playlist ' + plref.playlistId }));
-                menu.append(new gui.MenuItem({ type: 'separator' }));
-                menu.append(new gui.MenuItem({
-                    label: 'Remove from playlist',
-                    click: function() {
-                        GMusic.removeSongFromPlaylist(song.id, plref.playlistId, function(wasRemoved) {
-
-                            if (wasRemoved) {
-                                // TODO update playlist views
-                                // not realistically possible at the moment, but when we make music query view the
-                                // ng-view, we can use $route.reload()
-                            }
-                        });
-                    }
-                }));
-            }
         }
 
         $scope.moveInPlaylist = function(delta, dontLoopThrough) {

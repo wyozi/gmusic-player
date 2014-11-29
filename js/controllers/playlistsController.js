@@ -3,11 +3,15 @@ angular.module('gmusicPlayerApp')
     .controller('PlaylistsCtrl', ['$scope', '$rootScope', '$location', 'GMusic', function($scope, $rootScope, $location, GMusic) {
         $scope.playlists = [];
 
-        $rootScope.$on('playlists:set', function(event, playlists) {
-            $scope.playlists = playlists;
-
-            $scope.$apply();
-        })
+        GMusic.on('loggedIn', function() {
+            GMusic.getPlaylists(function(playlists) {
+                $scope.$apply(function() {
+                    $scope.playlists = playlists.map(function(pl) {
+                        return {name: pl.name, id: pl.id};
+                    });
+                })
+            });
+        });
 
         $scope.setPlaylistById = function(playlistId) {
             $location.path('/playlists/' + playlistId);
@@ -19,8 +23,4 @@ angular.module('gmusicPlayerApp')
         $scope.songDropped = function(data, playlist) {
             GMusic.addSongToPlaylist(data, playlist.id);
         }
-
-        /*$scope.$on('$locationChangeStart', function(event) {
-            console.log("Location chagned: ", event);
-        });*/
     }]);

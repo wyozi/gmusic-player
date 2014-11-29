@@ -7,8 +7,7 @@
     <link rel="stylesheet" type="text/css" href="css/app.css">
     <link rel="stylesheet" type="text/css" href="css/player.css">
 
-    <!-- TODO stop using external library -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="bower_components/components-font-awesome/css/font-awesome.css" rel="stylesheet">
 
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
@@ -23,11 +22,10 @@
 
     <script type="text/javascript" src="js/app.js"></script>
 
-    <script type="text/javascript" src="js/locationWatchers.js"></script>
-
     <script type="text/javascript" src="js/controllers/playerController.js"></script>
     <script type="text/javascript" src="js/controllers/authController.js"></script>
     <script type="text/javascript" src="js/controllers/musicQueryController.js"></script>
+    <script type="text/javascript" src="js/controllers/queryControllers.js"></script>
     <script type="text/javascript" src="js/controllers/playlistsController.js"></script>
     <script type="text/javascript" src="js/controllers/searchController.js"></script>
 
@@ -39,6 +37,42 @@
 </head>
 
 <body>
-    <div ng-view></div>
+    <div class="content-container" ng-controller="PlayerCtrl">
+        <div class="nav-container">
+            <form ng-controller="SearchCtrl" ng-submit="search()" class="searchform">
+                <input type="text" class="form-control" ng-model="query" required>
+                <input type="submit" value="Search">
+            </form>
+
+            <ul class="playlists" ng-controller="PlaylistsCtrl">
+                <li ng-repeat="playlist in playlists" drop-channel="songs" ui-on-drop="songDropped($data, playlist)">
+                    <a href="#/playlists/{{playlist.id}}">{{ playlist.name }}</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="musicquery-container" ng-controller="MusicQueryCtrl">
+
+            <div class="musicquery-list" scroll-to-top-when="music_query_updated" ng-view></div>
+
+            <div class="musicquery-overlay" ng-show="loading">
+                <div>
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                    Loading
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <audio-player></audio-player>
+    </div>
+
+    <div class="auth" ng-controller="AuthCtrl" ng-show="!authenticated">
+        <div>
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+            Authenticating with Google Music servers..
+        </div>
+    </div>
 </body>
 </html>

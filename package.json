@@ -21,6 +21,7 @@
     "node-cache": "~1.0.3",
     "bl": "~0.9.3",
     "request": "~2.49.0",
-    "freeport": "~1.0.3"
+    "freeport": "~1.0.3",
+    "add-events": "~0.9.3"
   }
 }

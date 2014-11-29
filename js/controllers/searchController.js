@@ -3,33 +3,7 @@ angular.module('gmusicPlayerApp')
         $scope.search = function() {
             var query = $scope.query;
             $location.path('/search/' + query);
+
+            // If you're interested in how search results are handled, see queryControllers.js
         }
-
-        $scope.$watch(function() {
-            return $location.path();
-        }, function() {
-            var searchRegex = /\/search\/(.+)/;
-            var match = $location.path().match(searchRegex);
-
-            if (match) {
-                var query = match[1];
-
-                $rootScope.$broadcast('musicquery:querystarted');
-
-                GMusic.search(query, function(results) {
-                    var onlyTracks = results.filter(function(obj) {
-                        return obj.type == "track";
-                    }).map(function(obj) {
-                        return obj.track;
-                    });
-                    $rootScope.$broadcast('musicquery:setresults', {
-                        query: 'search "' + query + '"',
-
-                        type: 'search',
-                        searchQuery: query,
-                        songs: onlyTracks
-                    });
-                });
-            }
-        });
     }]);
