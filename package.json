@@ -8,8 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "window": {
-    "width": 1000,
-    "height": 600,
+    "width": 1200,
+    "height": 700,
     "min_width": 600,
     "min_height": 400,
     "position": "center"
