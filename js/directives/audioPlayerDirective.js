@@ -76,7 +76,12 @@ angular.module('audioPlayer-directive', [])
                 $scope.audio.addEventListener('play', function(){ $rootScope.$broadcast('audio:play', this); });
                 $scope.audio.addEventListener('pause', function(){ $rootScope.$broadcast('audio:pause', this); });
                 $scope.audio.addEventListener('timeupdate', function(){ $rootScope.$broadcast('audio:time', this); });
-                $scope.audio.addEventListener('ended', function(){ $rootScope.$broadcast('audio:ended', this); $scope.next(true); });
+                $scope.audio.addEventListener('ended', function(){
+                    $rootScope.$broadcast('audio:ended', this);
+
+                    console.debug("Song ended; moving to next track");
+                    $scope.next(true);
+                });
 
                 $rootScope.$on('audio:set', function(event, data) {
                     var url = data.url;

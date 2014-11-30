@@ -63,11 +63,13 @@ function httpListener(req, res) {
                 header["Accept-Ranges"] = "bytes";
                 header["Connection"] = "close";
 
-                var sliced = buf.slice(start, end);
+                var sliced = buf.slice(start, end+1);
 
                 if (sliced.length != header["Content-Length"]) {
                     header["Content-Length"] = sliced.length;
                 }
+
+                console.debug("Serving user cached song. Range: ", header["Content-Range"], "; Length: ", (end-start)+1, "; RealLength: ", header["Content-Length"]);
 
                 res.writeHead(206, header);
                 res.write(sliced, "binary");
