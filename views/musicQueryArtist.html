@@ -14,7 +14,7 @@
     </thead>
     <tbody class="query-results">
         <tr ng-repeat="album in albums" ui-draggable="true" drag="album.id" drag-channel="albums">
-            <td><img src="{{ album.art }}" class="albumart"></td>
+            <td style="width: 32px; height: 32px;"><img src="{{ album.art }}" class="albumart"></td>
             <td>{{ album.year }}</td>
             <td ng-click="go('/albums/' + album.id)">{{ album.name }}</td>
         </tr>
