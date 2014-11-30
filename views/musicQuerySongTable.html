@@ -7,7 +7,7 @@
     </tr>
 </thead>
 <tbody class="query-results">
-    <tr ng-repeat="song in songs" ng-class="{activesong: currentSong && currentSong.id == song.id}" nw-menu="openSongMenu(song, $menu)" ui-draggable="true" drag="song.id" drag-channel="songs">
+    <tr ng-repeat="song in songs" ng-class="{activesong: currentSong && currentSong.info.id == song.id}" nw-menu="openSongMenu(song, $menu)" ui-draggable="true" drag="song.id" drag-channel="songs">
         <td><img src="{{ song.albumart }}" class="albumart"></td>
         <td ng-click="setCurrentSong(song, songContext)">{{ song.title }}</td>
         <td ng-click="go('/artists/' + song.artistid)">{{ song.artist }}</td>
