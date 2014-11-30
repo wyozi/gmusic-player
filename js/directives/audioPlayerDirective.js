@@ -92,10 +92,34 @@ angular.module('audioPlayer-directive', [])
                         songId: info.id,
                         songUrl: new Buffer(url).toString('base64')
                     });
-                    $scope.audio.play();
+
+                    var setPlayState = function() {
+                        if (data.startPaused == true) {
+                            $scope.audio.pause();
+                        }
+                        else {
+                            $scope.audio.play();
+                        }
+                    };
+
+                    // 'data' specifies a start time, so we need to do a hack to seek to the start time
+                    // when the audio is in a 'canplay' state
+                    if (data.startAt != undefined) {
+                        var setTimeFunc = function() {
+                            $scope.audio.currentTime = data.startAt;
+                            setPlayState();
+
+                            $scope.audio.removeEventListener('canplay', setTimeFunc);
+                        };
+                        $scope.audio.addEventListener('canplay', setTimeFunc);
+                    }
+
+                    setPlayState();
 
                     $scope.info = info;
                     $scope.context = context;
+
+                    localStorage.lastSongId = info.id;
 
                     $rootScope.currentSong = data;
                     $scope.$apply();
@@ -103,6 +127,8 @@ angular.module('audioPlayer-directive', [])
 
                 $scope.audio.addEventListener('timeupdate', function() {
                     $scope.currentTime = $scope.audio.currentTime;
+                    localStorage.lastSongTime = $scope.currentTime;
+
                     $scope.volume = $scope.audio.volume;
 
                     $scope.$apply();

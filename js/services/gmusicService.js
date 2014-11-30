@@ -189,6 +189,39 @@ GMusic.prototype.removeSongFromPlaylist = function(songId, playlistId, success, 
     }, errorcb);
 }
 
+GMusic.prototype.getSong = function(songId, callback, errorcb) {
+    var that = this;
+
+    var key = "songs/" + songId;
+
+    if (!this._checkCache(key, callback)) {
+        if (songId.indexOf('T') == 0) { // All access
+            that.pm.getAllAccessTrack(songId, function(info) {
+                var song = that._parseTrackObject(info);
+
+                callback(song);
+                that._cache.set(key, song);
+            }, errorcb);
+        }
+        else { // Custom uploaded
+            that._getCachedLibrary(function(items) {
+                for (var itemidx in items) {
+                    var track = items[itemidx];
+                    if (track.id == songId) {
+                        var song = that._parseTrackObject(track, track.id);
+                        callback(song);
+                        that._cache.set(key, song);
+                        break;
+                    }
+                }
+                callback(undefined);
+            }, errorcb);
+
+        }
+    }
+
+}
+
 GMusic.prototype.getAlbum = function(nid, callback, errorcb) {
     var that = this;
 
