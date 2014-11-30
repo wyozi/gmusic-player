@@ -239,7 +239,7 @@ GMusic.prototype.search = function(query, callback, errorcb) {
     var that = this;
 
     this.pm.search(query, 25, function(data) {
-        var songs = data.entries.sort(function(a, b) {
+        var songs = (data.entries || []).sort(function(a, b) {
             return a.score < b.score;
         }).map(function(res) {
             var ret = {};
