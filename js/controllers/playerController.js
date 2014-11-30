@@ -9,7 +9,9 @@ angular.module('gmusicPlayerApp')
                             url: url,
                             info: track,
 
-                            startAt: localStorage.lastSongTime || 0,
+                            // startAt doesn't work properly, so we'll just start from the beginning
+                            //startAt: localStorage.lastSongTime || 0,
+                            
                             startPaused: true
                         });
                     });
