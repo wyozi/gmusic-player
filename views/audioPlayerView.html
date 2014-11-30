@@ -11,14 +11,18 @@
     <input style="width: 100%" min="0" max="{{audio.duration}}" step="0.01" type="range" ng-model="currentTime" ng-change="updateCurrentTime()"/>
     -->
 </div>
-<div style="display: flex">
-    <div style="flex: 1 1 auto">
-        <img width="30" height="30" src="{{info.albumart}}" style="vertical-align: middle" /> <span>{{info.artist}} - {{info.title}}</span>
-    </div>
-
-    <div style="flex: 1 1 auto">
-        Volume:
-        <input min="0" max="1" step="0.01" type="range" ng-model="volume" ng-change="updateVolume()"/>
+<div class="player-controls">
+    <div style="flex: 3 1 auto; text-align: left;">
+        <a href="#/albums/{{info.albumid}}">
+            <img width="30" height="30" src="{{info.albumart}}" style="vertical-align: middle" />
+        </a>
+        <a href="#/artists/{{info.artistid}}">
+            {{info.artist}}
+        </a>
+        <span> - </span>
+        <a href="{{context.path || '#/'}}">
+            {{info.title}}
+        </a>
     </div>
 
     <div style="flex: 1 1 auto">
@@ -37,6 +41,6 @@
     </div>
 
     <div style="flex: 1 1 auto">
-        {{audio.error}}
+        <input min="0" max="1" step="0.01" type="range" ng-model="volume" ng-change="updateVolume()" style="width: 100%"/>
     </div>
 </div>

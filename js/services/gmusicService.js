@@ -34,6 +34,8 @@ GMusic.prototype._checkCache = function(key, callback) {
 
 /**
 * Parses a track object returned by 'playmusic' to a simpler version
+*
+* Track object schema: https://github.com/simon-weber/Unofficial-Google-Music-API/blob/develop/gmusicapi/protocol/mobileclient.py#L26
 */
 GMusic.prototype._parseTrackObject = function(trackobj, trackid) {
     return {
@@ -197,7 +199,7 @@ GMusic.prototype.getAlbum = function(nid, callback, errorcb) {
             var album = {};
 
             album.name = data.name;
-            album.tracks = data.tracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
+            album.tracks = data.tracks.map(function(o) { return that._parseTrackObject(o); });
 
             that._cache.set(key, album);
             callback(album);
@@ -221,7 +223,7 @@ GMusic.prototype.getArtist = function(artistId, callback, errorcb) {
             });
 
             artist.name = data.name;
-            artist.topTracks = data.topTracks.map(function(o) { return that._parseTrackObject(o, o.nid); });
+            artist.topTracks = data.topTracks.map(function(o) { return that._parseTrackObject(o); });
 
             that._cache.set(key, artist);
             callback(artist);
@@ -246,7 +248,7 @@ GMusic.prototype.search = function(query, callback, errorcb) {
 
             if (res.type == "1") {
                 ret.type = "track";
-                ret.track = that._parseTrackObject(res.track, res.track.nid);
+                ret.track = that._parseTrackObject(res.track);
             }
             else if (res.type == "2") {
                 ret.type = "artist";

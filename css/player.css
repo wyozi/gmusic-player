@@ -35,25 +35,39 @@ audio-player {
 
 audio-player > div {
     text-align: center;
-    
+
     align-items: center;
     justify-content: center;
 
     flex: 1;
 }
 
-audio-player button {
-    width: 38px;
-    height: 38px;
+audio-player > .player-controls {
+    display: flex;
 
-    background: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 24px;
+    bottom: 0;
+}
+
+audio-player > .player-controls > div {
+    padding: 5px;
+}
+
+audio-player button {
+    width: 48px;
+    height: 36px;
+    display: inline-block;
+
+    background-color: rgb(245, 180, 180);
     border: none;
 }
 
 audio-player button:hover {
     color: blue;
 }
-
 
 audio-player button .grayed {
     color: gray;
@@ -93,7 +107,7 @@ audio-player button .grayed {
     position:absolute;
     bottom: 0px;
     height: 3px;
-    background-color: gray;
+    background-color: rgba(50, 84, 24, 0.73);
 }
 
 .seekbar .current-time {
@@ -103,7 +117,7 @@ audio-player button .grayed {
 
     font-family: 'Consolas';
     font-size: 12px;
-    color: gray;
+    color: rgba(50, 84, 24, 0.73);
 
     white-space: nowrap;
 }

@@ -39,7 +39,7 @@ angular.module('gmusicPlayerApp')
             $timeout(function() {
                 $scope.$apply(function() {
                     $scope.songs = songs;
-                    $scope.songContext = {songs: songs};
+                    $scope.songContext = {songs: songs, path: '#/playlists/' + playlistId};
 
                     $scope.$parent.loading = false;
                 });
@@ -59,7 +59,7 @@ angular.module('gmusicPlayerApp')
                     $scope.artist = artist;
                     $scope.albums = artist.albums;
                     $scope.songs = artist.topTracks;
-                    $scope.songContext = {songs: artist.tracks};
+                    $scope.songContext = {songs: artist.tracks, path: '#/artists/' + artistId};
 
                     $scope.$parent.loading = false;
                 });
@@ -78,7 +78,7 @@ angular.module('gmusicPlayerApp')
                 $scope.$apply(function() {
                     $scope.album = album;
                     $scope.songs = album.tracks;
-                    $scope.songContext = {songs: album.tracks};
+                    $scope.songContext = {songs: album.tracks, path: '#/albums/' + albumId};
 
                     $scope.$parent.loading = false;
                 });
@@ -102,7 +102,7 @@ angular.module('gmusicPlayerApp')
             $timeout(function() {
                 $scope.$apply(function() {
                     $scope.songs = onlyTracks;
-                    $scope.songContext = {songs: onlyTracks};
+                    $scope.songContext = {songs: onlyTracks, path: '#/search/' + query};
 
                     $scope.$parent.loading = false;
                 });

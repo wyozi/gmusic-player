@@ -86,6 +86,7 @@ angular.module('audioPlayer-directive', [])
                 $rootScope.$on('audio:set', function(event, data) {
                     var url = data.url;
                     var info = data.info;
+                    var context = data.context;
 
                     $scope.audio.src = "http://localhost:" + (MusicStreamServerPort || 8080) + "/?" + querystring.stringify({
                         songId: info.id,
@@ -94,6 +95,7 @@ angular.module('audioPlayer-directive', [])
                     $scope.audio.play();
 
                     $scope.info = info;
+                    $scope.context = context;
 
                     $rootScope.currentSong = data;
                     $scope.$apply();
