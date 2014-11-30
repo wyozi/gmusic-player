@@ -53,6 +53,9 @@ audio-player > .player-controls {
 }
 
 audio-player > .player-controls > div {
+    width: 0; /* needed to make flexbox do its job */
+    flex-wrap: nowrap;
+
     padding: 5px;
 }
 
