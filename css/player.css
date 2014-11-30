@@ -61,12 +61,15 @@ audio-player button {
     height: 36px;
     display: inline-block;
 
-    background-color: rgb(245, 180, 180);
+    background-color: rgba(50, 84, 24, 0.73);
     border: none;
+    font-size: 24px;
+
+    color: lightgray;
 }
 
 audio-player button:hover {
-    color: blue;
+    color: white;
 }
 
 audio-player button .grayed {

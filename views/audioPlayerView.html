@@ -26,17 +26,13 @@
     </div>
 
     <div style="flex: 1 1 auto">
-        <button ng-click="prev()"><i class="fa fa-lg fa-backward"></i></button>
+        <button ng-click="prev()"><i class="typcn typcn-media-rewind"></i></button>
         <button ng-click="playpause()">
-            <i class="fa fa-lg" ng-class="{'fa-play': audio.paused, 'fa-pause': !audio.paused}"></i>
+            <i class="typcn" ng-class="{'typcn-media-play': audio.paused, 'typcn-media-pause': !audio.paused}"></i>
         </button>
-        <button ng-click="next()"><i class="fa fa-lg fa-forward"></i></button>
+        <button ng-click="next()"><i class="typcn typcn-media-fast-forward"></i></button>
         <button ng-click="cycleLoopState()">
-            <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x" ng-show="loopState == 2"></i>
-                <i class="fa fa-retweet fa-stack-1x" ng-class="{grayed: loopState == 0, 'fa-inverse': loopState == 2}"></i>
-            </span>
-
+            <i class="typcn" ng-class="{grayed: loopState == 0, 'typcn-arrow-repeat': loopState != 2, 'typcn-arrow-loop': loopState == 2}"></i>
         </button>
     </div>
 
