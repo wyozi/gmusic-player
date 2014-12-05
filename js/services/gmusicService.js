@@ -246,7 +246,7 @@ GMusic.prototype.getArtist = function(artistId, callback, errorcb) {
     var key = "artists/" + artistId;
 
     if (!this._checkCache(key, callback)) {
-        this.pm.getArtist(artistId, true, 10, 0, function(data) {
+        this.pm.getArtist(artistId, true, 25, 0, function(data) {
             var artist = {};
 
             artist.albums = data.albums.map(function(o) {

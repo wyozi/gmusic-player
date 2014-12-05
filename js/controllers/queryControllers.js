@@ -53,16 +53,35 @@ angular.module('gmusicPlayerApp')
         $scope.artist = undefined;
         $scope.$parent.loading = true;
 
-        GMusic.getArtist(artistId, function(artist) {
+        $scope.showTopTrackCount = 0;
+
+        $scope.hasMoreToShow = function() {
+            if ($scope.allSongs == undefined) return false;
+            
+            return $scope.showTopTrackCount < $scope.allSongs.length;
+        }
+        $scope.showMore = function() {
+            $scope.showTopTrackCount += 5;
+
             $timeout(function() {
                 $scope.$apply(function() {
-                    $scope.artist = artist;
-                    $scope.albums = artist.albums;
-                    $scope.songs = artist.topTracks;
-                    $scope.songContext = {songs: artist.tracks, path: '#/artists/' + artistId};
-
-                    $scope.$parent.loading = false;
+                    $scope.songs = $scope.allSongs.slice(0, $scope.showTopTrackCount);
                 });
+            });
+        }
+
+        GMusic.getArtist(artistId, function(artist) {
+            $timeout(function() {
+                $scope.artist = artist;
+                $scope.albums = artist.albums;
+
+                $scope.allSongs = artist.topTracks;
+
+                $scope.showMore();
+
+                $scope.songContext = {songs: artist.topTracks, path: '#/artists/' + artistId};
+
+                $scope.$parent.loading = false;
             })
         });
     }])

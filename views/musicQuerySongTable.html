@@ -13,4 +13,11 @@
         <td ng-click="go('/artists/' + song.artistid)">{{ song.artist }}</td>
         <td ng-click="go('/albums/' + song.albumid)">{{ song.album }}</td>
     </tr>
+
+    <tr ng-show="hasMoreToShow()" class="showmore">
+        <td></td>
+        <td ng-click="showMore()">Show more</td>
+        <td></td>
+        <td></td>
+    </tr>
 </tbody>
