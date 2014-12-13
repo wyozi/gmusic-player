@@ -123,7 +123,7 @@ body {
     border-radius: 10px;
 }
 
-.auth {
+.auth, .errorbox {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -138,12 +138,41 @@ body {
 }
 
 .auth > div {
-    width: 250px;
-    height: 100px;
-    background-color: #ff7979;
+    width: 300px;
+    height: 50px;
+    background-color: #f2a248;
     text-align: center;
     line-height: 50px;
+
+    text-align: center;
     border-radius: 10px;
+}
+
+.errorbox > div {
+    width: 400px;
+    height: 200px;
+    background-color: #bc2f2f;
+    line-height: 50px;
+
+    text-align: center;
+    border-radius: 10px;
+}
+
+.errorbox div[ng-click] {
+    width: 80%;
+    height: 40px;
+    background-color: white;
+    cursor: pointer;
+    margin: auto;
+}
+
+.img-spin {
+    /*-webkit-animation: spin 2s linear infinite;*/
+}
+
+@-webkit-keyframes spin {
+    0%   {-webkit-transform: rotate(0deg); -webkit-transform-origin: 0% 50% 0%;}
+    100% {-webkit-transform: rotate(360deg); -webkit-transform-origin: 0% 50% 0%;}
 }
 
 .footer {

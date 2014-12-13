@@ -58,7 +58,7 @@
 
             <div class="musicquery-overlay" ng-show="loading">
                 <div>
-                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                    <i class="typcn typcn-arrow-sync img-spin"></i>
                     Loading
                 </div>
             </div>
@@ -71,8 +71,15 @@
 
     <div class="auth" ng-controller="AuthCtrl" ng-show="!authenticated">
         <div>
-            <i class="fa fa-circle-o-notch fa-spin"></i>
+            <i class="typcn typcn-arrow-sync img-spin"></i>
             Authenticating with Google Music servers..
+        </div>
+    </div>
+
+    <div class="errorbox" ng-show="nodeError != undefined">
+        <div>
+            {{nodeError}}
+            <div ng-click="nodeError = undefined">Dismiss</div>
         </div>
     </div>
 </body>
