@@ -109,11 +109,18 @@ audio-player button .grayed {
     width: 0px;
 }
 
-.seekbar span:not(:first-child) {
+.seekbar .buffer-bar {
     position:absolute;
     bottom: 0px;
     height: 3px;
     background-color: rgba(50, 84, 24, 0.73);
+}
+
+.seekbar .loop-bar {
+    position:absolute;
+    top: 0px;
+    height: 2px;
+    background-color: rgba(0, 0, 0, 0.73);
 }
 
 .seekbar .current-time {

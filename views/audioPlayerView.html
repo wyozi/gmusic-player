@@ -4,8 +4,13 @@
             <span class="current-time">{{(currentDraggedTime || currentTime) | minutesSeconds}} / {{audio.duration | minutesSeconds}}</span>
         </span>
 
-        <span ng-repeat="i in range(audio.buffered.length)"
+        <span class="buffer-bar"
+            ng-repeat="i in range(audio.buffered.length)"
             ng-style="{'left': (audio.buffered.start(i) / audio.duration)*100 + '%', 'right': (1-(audio.buffered.end(i) / audio.duration))*100 + '%'}"></span>
+
+        <span class="loop-bar"
+            ng-show="loopMarker"
+            ng-style="{'left': (loopMarker.start / audio.duration)*100 + '%', 'right': (1-(loopMarker.end / audio.duration))*100 + '%'}"></span>
     </div>
     <!--
     <input style="width: 100%" min="0" max="{{audio.duration}}" step="0.01" type="range" ng-model="currentTime" ng-change="updateCurrentTime()"/>
@@ -33,7 +38,8 @@
         </button>
         <button ng-click="next()"><i class="typcn typcn-media-fast-forward"></i></button>
         <button ng-click="cycleLoopState()">
-            <i class="typcn" ng-class="{grayed: loopState == 0, 'typcn-arrow-repeat': loopState != 2, 'typcn-arrow-loop': loopState == 2}"></i>
+            <i class="typcn"
+                ng-class="{grayed: loopState == 0, 'typcn-arrow-repeat': loopState != 2, 'typcn-arrow-loop': loopState == 2, 'typcn-infinity': loopState == 99}"></i>
         </button>
     </div>
 

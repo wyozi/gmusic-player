@@ -34,6 +34,8 @@ angular.module('audioPlayer-directive', [])
                 ];
                 $scope.loopState = localStorage.loopState || 1;
 
+                if ($scope.loopState == 99) $scope.loopState = 1; // used loop marker
+
                 $scope.currentTime = 0;
 
                 $scope.next = function(triggeredByEndEvent) {
@@ -54,6 +56,7 @@ angular.module('audioPlayer-directive', [])
 
                 $scope.cycleLoopState = function() {
                     $scope.loopState = ($scope.loopState+1) % $scope.loopStates.length;
+                    $scope.loopMarker = undefined;
                     localStorage.loopState = $scope.loopState;
                 }
 
@@ -117,6 +120,8 @@ angular.module('audioPlayer-directive', [])
 
                     setPlayState();
 
+                    $scope.loopMarker = undefined;
+                    
                     $scope.info = info;
                     $scope.context = context;
 
@@ -127,6 +132,14 @@ angular.module('audioPlayer-directive', [])
                 });
 
                 $scope.audio.addEventListener('timeupdate', function() {
+                    if ($scope.loopMarker != undefined && ($scope.loopMarker.end - $scope.loopMarker.start) > 1) {
+                        var start = $scope.loopMarker.start;
+                        var end = $scope.loopMarker.end;
+
+                        if ($scope.audio.currentTime < start || $scope.audio.currentTime > end)
+                            $scope.audio.currentTime = start;
+                    }
+
                     $scope.currentTime = $scope.audio.currentTime;
                     localStorage.lastSongTime = $scope.currentTime;
 
@@ -157,15 +170,16 @@ angular.module('audioPlayer-directive', [])
                 })
 
                 // Seekbar stuff
-
-                function updateDraggedTime(e) {
+                function getDraggedTime(e) {
                     var seekbar = $(e.srcElement).closest(".seekbar");
                     var frac = (e.pageX - seekbar.offset().left) / seekbar.width();
-                    $scope.currentDraggedTime = frac * $scope.audio.duration;
+                    return frac * $scope.audio.duration;
                 }
 
                 $scope.seekBarMouseDown = function(e) {
-                    updateDraggedTime(e);
+                    if (e.button == 0) {
+                        $scope.currentDraggedTime = getDraggedTime(e);
+                    }
                 }
                 $scope.seekBarResetDrag = function(e) {
                     if ($scope.currentDraggedTime) {
@@ -175,8 +189,21 @@ angular.module('audioPlayer-directive', [])
                     $scope.currentDraggedTime = undefined;
                 }
                 $scope.seekBarDragged = function(e) {
-                    if (e.which == 1 && $scope.currentDraggedTime) {
-                        updateDraggedTime(e);
+                    if (e.button == 0) {
+                        if (e.which == 1 && $scope.currentDraggedTime) {
+                            $scope.currentDraggedTime = getDraggedTime(e);
+                        }
+                    }
+                    else if (e.button == 2) {
+                        var t = getDraggedTime(e);
+
+                        if ($scope.loopMarker == undefined) $scope.loopMarker = {start: t, end: t};
+
+                        var lm = $scope.loopMarker;
+                        lm.start = Math.min(t, lm.start);
+                        lm.end = Math.max(t, lm.end);
+
+                        $scope.loopState = 99;
                     }
                 }
                 $scope.range = function(n) {
