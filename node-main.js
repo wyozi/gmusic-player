@@ -4,7 +4,7 @@ process.on("uncaughtException", function(e) {
 
     try {
         // Source: http://stackoverflow.com/a/24596251
-        var $body = angular.element(document.body);   // 1
+        var $body = window.angular.element(window.document.body);   // 1
         var $rootScope = $body.scope().$root;         // 2
         $rootScope.$apply(function () {               // 3
             $rootScope.nodeError = e;
