@@ -34,8 +34,6 @@ angular.module('audioPlayer-directive', [])
                 ];
                 $scope.loopState = localStorage.loopState || 1;
 
-                if ($scope.loopState == 99) $scope.loopState = 1; // used loop marker
-
                 $scope.currentTime = 0;
 
                 $scope.next = function(triggeredByEndEvent) {
@@ -55,8 +53,13 @@ angular.module('audioPlayer-directive', [])
                 $scope.playpause = function() { var a = $scope.audio.paused ? $scope.audio.play() : $scope.audio.pause(); };
 
                 $scope.cycleLoopState = function() {
+                    // Clear loop marker if it exists
+                    if ($scope.loopMarker != undefined) {
+                        $scope.loopMarker = undefined;
+                        return;
+                    }
+
                     $scope.loopState = ($scope.loopState+1) % $scope.loopStates.length;
-                    $scope.loopMarker = undefined;
                     localStorage.loopState = $scope.loopState;
                 }
 
@@ -121,7 +124,7 @@ angular.module('audioPlayer-directive', [])
                     setPlayState();
 
                     $scope.loopMarker = undefined;
-                    
+
                     $scope.info = info;
                     $scope.context = context;
 
@@ -160,7 +163,7 @@ angular.module('audioPlayer-directive', [])
                             $scope.audio.currentTime = time;
                             $scope.audio.play();
 
-                            console.log("Set currentTime to ", time, " (real : ", $scope.audio.currentTime, "; dur: ", $scope.audio.duration, ")");
+                            console.debug("Set currentTime to ", time, " (real : ", $scope.audio.currentTime, "; dur: ", $scope.audio.duration, ")");
                             $scope.audio.removeEventListener('canplay', setTimeFunc);
                         };
                         $scope.audio.addEventListener('canplay', setTimeFunc);
@@ -202,8 +205,6 @@ angular.module('audioPlayer-directive', [])
                         var lm = $scope.loopMarker;
                         lm.start = Math.min(t, lm.start);
                         lm.end = Math.max(t, lm.end);
-
-                        $scope.loopState = 99;
                     }
                 }
                 $scope.range = function(n) {
