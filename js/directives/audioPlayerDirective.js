@@ -135,12 +135,17 @@ angular.module('audioPlayer-directive', [])
                 });
 
                 $scope.audio.addEventListener('timeupdate', function() {
+                    // Handle looping
                     if ($scope.loopMarker != undefined && ($scope.loopMarker.end - $scope.loopMarker.start) > 1) {
                         var start = $scope.loopMarker.start;
                         var end = $scope.loopMarker.end;
 
                         if ($scope.audio.currentTime < start || $scope.audio.currentTime > end)
                             $scope.audio.currentTime = start;
+                    }
+
+                    if ($scope.loopMarker == undefined && $scope.audio.currentTime > ($scope.audio.duration-3)) {
+                        $rootScope.$broadcast('audio:ending');
                     }
 
                     $scope.currentTime = $scope.audio.currentTime;
@@ -153,7 +158,7 @@ angular.module('audioPlayer-directive', [])
 
                 $scope.audio.addEventListener('error', function() {
                     var err = $scope.audio.error;
-                    //if (errid == 2) {
+                    if (err.code == 2) {
                         var src = $scope.audio.src;
                         var time = $scope.audio.currentTime;
 
@@ -169,7 +174,7 @@ angular.module('audioPlayer-directive', [])
                         $scope.audio.addEventListener('canplay', setTimeFunc);
 
                         console.log("Reloading audio due to error: ", err);
-                    //}
+                    }
                 })
 
                 // Seekbar stuff

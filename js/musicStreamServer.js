@@ -33,6 +33,8 @@ var MusicCache = new NodeCache();
 function httpListener(req, res) {
     var qs = querystring.parse(url.parse(req.url).query);
 
+    var cacheHint = qs.cacheHint != undefined;
+
     if (qs.songId != undefined && qs.songUrl != undefined) {
         var songId = qs.songId;
         var songUrl = new Buffer(qs.songUrl, 'base64').toString('ascii');
@@ -41,8 +43,14 @@ function httpListener(req, res) {
         // If it does, we can easily give user any part of the song (using http header 'range')
         var cachedMusic = MusicCache.get(songId);
         if (cachedMusic[songId] != undefined) {
-            var data = cachedMusic[songId];
 
+            if (cacheHint) {
+                res.writeHead(200);
+                res.end();
+                return;
+            }
+
+            var data = cachedMusic[songId];
             console.log("Using cached " + songId + " (len: " + data.length + ")");
             var header = {};
 
@@ -94,29 +102,41 @@ function httpListener(req, res) {
                 // Update cache pointer
                 MusicCache.set(songId, data);
 
-                res.writeHead(206, {
-                    'content-type': response.headers['content-type'],
-                    'content-length': response.headers['content-length'],
-                    'content-range': 'bytes 0-' + (response.headers['content-length']-1) + '/' + response.headers['content-length'],
-                    'accept-ranges': 'bytes',
-                    'connection': 'close'
-                });
+                if (cacheHint) {
+                    console.debug("Got a cache hint to cache " + songId);
+
+                    res.writeHead(200);
+                    res.end();
+                }
+                else {
+                    console.debug("Caching " + songId);
+                    
+                    res.writeHead(206, {
+                        'content-type': response.headers['content-type'],
+                        'content-length': response.headers['content-length'],
+                        'content-range': 'bytes 0-' + (response.headers['content-length']-1) + '/' + response.headers['content-length'],
+                        'accept-ranges': 'bytes',
+                        'connection': 'close'
+                    });
+                }
             });
 
             var pt = new stream.PassThrough();
 
             pt.on('data', function(chunk) {
                 data.append(chunk);
-                res.write(chunk);
+
+                if (!cacheHint) res.write(chunk);
             });
             pt.on('end', function() {
                 if (data.getBuffer().length == 0) {
                     console.log("on'end' returned data with 0 length for " + songId + ", not caching")
                 }
                 else {
-                    console.log("Cached song " + songId + " (len: " + data.getBuffer().length + ")");
+                    console.debug("Cached song " + songId + " (len: " + data.getBuffer().length + ")");
                 }
-                res.end();
+
+                if (!cacheHint) res.end();
             });
 
             x.pipe(pt);

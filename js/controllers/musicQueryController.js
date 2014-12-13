@@ -1,3 +1,5 @@
+var querystring = require('querystring');
+
 angular.module('gmusicPlayerApp')
     .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', '$timeout', '$location', function($scope, $rootScope, GMusic, $timeout, $location) {
         $scope.setCurrentSong = function(song, context) {
@@ -15,7 +17,7 @@ angular.module('gmusicPlayerApp')
             $location.path(path);
         }
 
-        $scope.moveInPlaylist = function(delta, dontLoopThrough) {
+        $scope.getNextInPlaylist = function(delta, dontLoopThrough) {
             var song = $rootScope.currentSong;
             if (!song) {
                 return;
@@ -40,20 +42,47 @@ angular.module('gmusicPlayerApp')
                     return;
                 }
 
-                var nextSong = context.songs[nextIndex];
-
-                GMusic.getStreamUrl(nextSong.id, function(url) {
-                    $rootScope.$broadcast('audio:set', {
-                        url: url,
-                        info: nextSong,
-                        context: context
-                    });
-                })
+                return context.songs[nextIndex];
             }
         }
 
+        $scope.moveInPlaylist = function(delta, dontLoopThrough) {
+            var nextSong = $scope.getNextInPlaylist(delta, dontLoopThrough);
+            if (nextSong == undefined) {
+                return;
+            }
+
+            GMusic.getStreamUrl(nextSong.id, function(url) {
+                $rootScope.$broadcast('audio:set', {
+                    url: url,
+                    info: nextSong,
+                    context: nextSong.context
+                });
+            });
+        }
+
+        $rootScope.$on('audio:ending', function(event) {
+            if ($scope.nextSongCached) return;
+            $scope.nextSongCached = true;
+
+            var nextSong = $scope.getNextInPlaylist(+1);
+            console.debug("Audio ending; let's cache the next song in context");
+            if (nextSong != undefined) {
+                GMusic.getStreamUrl(nextSong.id, function(url) {
+                    var url = "http://localhost:" + (MusicStreamServerPort || 8080) + "/?" + querystring.stringify({
+                        songId: nextSong.id,
+                        songUrl: new Buffer(url).toString('base64'),
+                        cacheHint : true
+                    });
+
+                    $.get(url);
+                });
+            }
+        });
+
         $rootScope.$on('audio:next', function(event, triggeredByEndEvent, loopStateText) {
             $scope.moveInPlaylist(+1, triggeredByEndEvent && loopStateText != "all");
+            $scope.nextSongCached = false;
         });
         $rootScope.$on('audio:prev', function() {
             $scope.moveInPlaylist(-1);
