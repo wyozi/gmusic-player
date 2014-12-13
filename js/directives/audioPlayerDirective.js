@@ -32,7 +32,7 @@ angular.module('audioPlayer-directive', [])
                     {text: 'all'},
                     {text: 'single'}
                 ];
-                $scope.loopState = 1;
+                $scope.loopState = localStorage.loopState || 1;
 
                 $scope.currentTime = 0;
 
@@ -54,6 +54,7 @@ angular.module('audioPlayer-directive', [])
 
                 $scope.cycleLoopState = function() {
                     $scope.loopState = ($scope.loopState+1) % $scope.loopStates.length;
+                    localStorage.loopState = $scope.loopState;
                 }
 
                 $scope.updateCurrentTime = function() {
