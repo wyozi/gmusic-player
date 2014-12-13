@@ -321,6 +321,7 @@ GMusic.prototype.search = function(query, scallback, serrorcb) {
             if (item.nid != undefined && that._isAllAccessSong(item.nid)) return false;
 
             if (item.title.toLowerCase().indexOf(lcQuery) != -1) return true;
+            if (item.artist.toLowerCase().indexOf(lcQuery) != -1) return true;
 
             return false;
         }).map(function(item) {
