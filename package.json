@@ -17,7 +17,7 @@
   "author": "Wyozi",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "playmusic": "1.1.0",
+    "playmusic": "1.1.1",
     "node-cache": "~1.0.3",
     "bl": "~0.9.3",
     "request": "~2.49.0",

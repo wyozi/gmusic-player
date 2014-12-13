@@ -32,6 +32,10 @@ GMusic.prototype._checkCache = function(key, callback) {
     return false;
 }
 
+GMusic.prototype._isAllAccessSong = function(songid) {
+    return songid.indexOf('T') == 0;
+}
+
 /**
 * Parses a track object returned by 'playmusic' to a simpler version
 *
@@ -195,7 +199,7 @@ GMusic.prototype.getSong = function(songId, callback, errorcb) {
     var key = "songs/" + songId;
 
     if (!this._checkCache(key, callback)) {
-        if (songId.indexOf('T') == 0) { // All access
+        if (that._isAllAccessSong(songId)) {
             that.pm.getAllAccessTrack(songId, function(info) {
                 var song = that._parseTrackObject(info);
 
@@ -203,7 +207,7 @@ GMusic.prototype.getSong = function(songId, callback, errorcb) {
                 that._cache.set(key, song);
             }, errorcb);
         }
-        else { // Custom uploaded
+        else {
             that._getCachedLibrary(function(items) {
                 for (var itemidx in items) {
                     var track = items[itemidx];
@@ -211,10 +215,10 @@ GMusic.prototype.getSong = function(songId, callback, errorcb) {
                         var song = that._parseTrackObject(track, track.id);
                         callback(song);
                         that._cache.set(key, song);
-                        break;
+                        return;
                     }
                 }
-                callback(undefined);
+                that.pm.error(errorcb, "Couldn't find non-AllAccess track with given id");
             }, errorcb);
 
         }
@@ -268,13 +272,26 @@ GMusic.prototype.getStreamUrl = function(trackid, callback, errorcb) {
     this.pm.getStreamUrl(trackid, callback, errorcb);
 }
 
-GMusic.prototype.search = function(query, callback, errorcb) {
+GMusic.prototype.search = function(query, scallback, serrorcb) {
     var that = this;
 
+    // Callback should only be called after we get results from both AllAccess search and library search
+    var called = 0;
+    var data = [];
+    var callback = function(sdata) {
+        data = data.concat(sdata);
+
+        if (++called >= 2){
+            var sorted = data.sort(function(a, b) {
+                return a.score < b.score;
+            });
+            scallback(sorted);
+        }
+    };
+    var errorcb = _.once(serrorcb);
+
     this.pm.search(query, 25, function(data) {
-        var songs = (data.entries || []).sort(function(a, b) {
-            return a.score < b.score;
-        }).map(function(res) {
+        var songs = (data.entries || []).map(function(res) {
             var ret = {};
 
             ret.score = res.score;
@@ -296,6 +313,27 @@ GMusic.prototype.search = function(query, callback, errorcb) {
         });
         callback(songs);
     }, errorcb);
+
+    this._getCachedLibrary(function(cb) {
+        var lcQuery = query.toLowerCase();
+
+        var foundSongs = cb.filter(function(item) {
+            if (item.nid != undefined && that._isAllAccessSong(item.nid)) return false;
+
+            if (item.title.toLowerCase().indexOf(lcQuery) != -1) return true;
+
+            return false;
+        }).map(function(item) {
+            return {
+                type: "track",
+                score: 1000,
+                track: that._parseTrackObject(item, item.id)
+            };
+        });
+
+        callback(foundSongs);
+    }, errorcb);
+
 }
 
 angular.module('gmusicService', []).service('GMusic', GMusic);
