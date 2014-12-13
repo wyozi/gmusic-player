@@ -15,8 +15,9 @@ var http = require('http');
 var request = require('request');
 var url = require('url');
 var querystring = require('querystring');
-var bl = require('bl');
+var BufferList = require('bl');
 var stream = require('stream');
+var util = require ("util");
 
 var NodeCache = require("node-cache");
 
@@ -40,9 +41,9 @@ function httpListener(req, res) {
         // If it does, we can easily give user any part of the song (using http header 'range')
         var cachedMusic = MusicCache.get(songId);
         if (cachedMusic[songId] != undefined) {
-            var buf = cachedMusic[songId];
+            var data = cachedMusic[songId];
 
-            console.log("Using cached " + songId + " (len: " + buf.length + ")");
+            console.log("Using cached " + songId + " (len: " + data.length + ")");
             var header = {};
 
             header['Content-Type'] = 'audio/mpeg';
@@ -54,22 +55,19 @@ function httpListener(req, res) {
                 var partialstart = parts[0];
                 var partialend = parts[1];
 
-                var total = buf.length;
+                var fullLength = data.getBuffer().length;
+                var readableLength = data.readBytes;
 
                 var start = parseInt(partialstart, 10);
-                var end = partialend ? parseInt(partialend, 10) : total-1;
+                var fullEnd = partialend ? parseInt(partialend, 10) : fullLength-1;
 
-                header["Content-Range"] = "bytes " + start + "-" + end + "/" + (total);
+                header["Content-Range"] = "bytes " + start + "-" + fullEnd + "/" + fullLength;
                 header["Accept-Ranges"] = "bytes";
                 header["Connection"] = "close";
 
-                var sliced = buf.slice(start, end+1);
+                var sliced = data.getBuffer().slice(start, fullEnd+1);
 
-                if (sliced.length != header["Content-Length"]) {
-                    header["Content-Length"] = sliced.length;
-                }
-
-                console.debug("Serving user cached song. Range: ", header["Content-Range"], "; Length: ", (end-start)+1, "; RealLength: ", header["Content-Length"]);
+                console.debug("Serving user cached song. Range: ", header["Content-Range"], "; Length: ", (fullEnd-start)+1, "; RealLength: ", header["Content-Length"]);
 
                 res.writeHead(206, header);
                 res.write(sliced, "binary");
@@ -77,20 +75,25 @@ function httpListener(req, res) {
             }
             else {
                 res.writeHead(200, header);
-                res.write(buf, "binary");
+                res.write(data.getBuffer(), "binary");
                 res.end();
             }
         }
         else {
             // Music not cached, let's fetch it
-            var buf = bl();
 
-            // we can set cache here, it is stored by reference anyway
-            MusicCache.set(songId, buf);
+            var data;
 
             var x = request({url: songUrl, encoding: null});
 
             x.on('response', function(response) {
+                var size = parseInt(response.headers['content-length']);
+                // Now that we know the song size in bytes, we can create a buffer list
+                data = new SongData(size);
+
+                // Update cache pointer
+                MusicCache.set(songId, data);
+
                 res.writeHead(206, {
                     'content-type': response.headers['content-type'],
                     'content-length': response.headers['content-length'],
@@ -103,15 +106,15 @@ function httpListener(req, res) {
             var pt = new stream.PassThrough();
 
             pt.on('data', function(chunk) {
-                buf.append(chunk);
+                data.append(chunk);
                 res.write(chunk);
             });
             pt.on('end', function() {
-                if (buf.length == 0) {
-                    console.log("on'end' returned buf with 0 length for " + songId + ", not caching")
+                if (data.getBuffer().length == 0) {
+                    console.log("on'end' returned data with 0 length for " + songId + ", not caching")
                 }
                 else {
-                    console.log("Cached song " + songId + " (len: " + buf.length + ")");
+                    console.log("Cached song " + songId + " (len: " + data.getBuffer().length + ")");
                 }
                 res.end();
             });
@@ -125,4 +128,25 @@ function httpListener(req, res) {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end('<audio controls><source src="?songId=example&songUrl=' + new Buffer('https://dl.dropboxusercontent.com/u/18458187/metropol.mp3').toString('base64') + '" type="audio/mpeg"></audio>\n');
     }
+}
+
+function SongData(size) {
+    this._buffer = new Buffer(size);
+    this._stream = new stream.PassThrough();
+    this._readBytes = 0;
+}
+
+SongData.prototype.getBuffer = function() {
+    return this._buffer;
+}
+
+SongData.prototype.append = function(buf) {
+    buf.copy(this._buffer, this._readBytes);
+    this._readBytes += buf.length;
+
+    this._stream.write(buf);
+}
+
+SongData.prototype.onData = function(cb) {
+    this._stream.on('data', cb);
 }
