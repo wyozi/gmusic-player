@@ -75,6 +75,8 @@ function httpListener(req, res) {
 
                 var sliced = data.getBuffer().slice(start, fullEnd+1);
 
+                header["Content-Length"] = (fullEnd-start)+1;
+
                 console.debug("Serving user cached song. Range: ", header["Content-Range"], "; Length: ", (fullEnd-start)+1, "; RealLength: ", header["Content-Length"]);
 
                 res.writeHead(206, header);
@@ -82,8 +84,11 @@ function httpListener(req, res) {
                 res.end();
             }
             else {
+                var buf = data.getBuffer();
+                header["Content-Length"] = buf.length;
+
                 res.writeHead(200, header);
-                res.write(data.getBuffer(), "binary");
+                res.write(buf, "binary");
                 res.end();
             }
         }
@@ -110,7 +115,7 @@ function httpListener(req, res) {
                 }
                 else {
                     console.debug("Caching " + songId);
-                    
+
                     res.writeHead(206, {
                         'content-type': response.headers['content-type'],
                         'content-length': response.headers['content-length'],
