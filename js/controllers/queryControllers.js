@@ -1,3 +1,5 @@
+var gui = require('nw.gui');
+
 
 angular.module('gmusicPlayerApp')
     .controller('QueryPlaylistCtrl', ['$rootScope', '$scope', '$routeParams', '$timeout', '$route', 'GMusic', function($rootScope, $scope, $routeParams, $timeout, $route, GMusic) {
@@ -14,10 +16,23 @@ angular.module('gmusicPlayerApp')
         });
 
         $scope.openSongMenu = function(song, menu) {
-            menu.append(new gui.MenuItem({ label: 'Song ' + song.id }));
+            menu.append(new gui.MenuItem({
+                label: 'Song ' + song.id,
+                click: function() {
+                    gui.Clipboard.get().set(song.id, 'text');
+                    var notification = new Notification("Copied!", {body: "Song id has been copied to clipboard."});
+                }
+            }));
+            menu.append(new gui.MenuItem({
+                label: 'Playlist ' + $scope.playlistId,
+                click: function() {
+                    gui.Clipboard.get().set($scope.playlistId, 'text');
+                    var notification = new Notification("Copied!", {body: "Playlist id has been copied to clipboard."});
+                }
+            }));
 
-            menu.append(new gui.MenuItem({ label: 'Playlist ' + $scope.playlistId }));
             menu.append(new gui.MenuItem({ type: 'separator' }));
+
             menu.append(new gui.MenuItem({
                 label: 'Remove from playlist',
                 click: function() {
@@ -57,7 +72,7 @@ angular.module('gmusicPlayerApp')
 
         $scope.hasMoreToShow = function() {
             if ($scope.allSongs == undefined) return false;
-            
+
             return $scope.showTopTrackCount < $scope.allSongs.length;
         }
         $scope.showMore = function() {
