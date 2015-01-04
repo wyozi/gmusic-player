@@ -53,6 +53,10 @@ body {
     background-color: #4ECDC4;
 }
 
+.playlists > .on-drag-hover {
+    background-color : #aaaaaa;
+}
+
 .playlists > li > a {
     display: block;
 
