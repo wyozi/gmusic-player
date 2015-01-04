@@ -11,7 +11,7 @@ angular.module('gmusicPlayerApp')
 
                             // startAt doesn't work properly, so we'll just start from the beginning
                             //startAt: localStorage.lastSongTime || 0,
-                            
+
                             startPaused: true
                         });
                     });

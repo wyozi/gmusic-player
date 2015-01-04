@@ -48,7 +48,9 @@
             </form>
 
             <ul class="playlists" ng-controller="PlaylistsCtrl">
-                <li ng-repeat="playlist in playlists" drop-channel="songs" ui-on-drop="songDropped($data, playlist)">
+                <li ng-repeat="playlist in playlists"
+                    ng-class="{activepl: activePlaylistId == playlist.id}"
+                    drop-channel="songs" ui-on-drop="songDropped($data, playlist)">
                     <a href="#/playlists/{{playlist.id}}">{{ playlist.name }}</a>
                 </li>
             </ul>

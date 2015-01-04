@@ -1,6 +1,6 @@
 
 angular.module('gmusicPlayerApp')
-    .controller('PlaylistsCtrl', ['$scope', '$rootScope', '$location', 'GMusic', function($scope, $rootScope, $location, GMusic) {
+    .controller('PlaylistsCtrl', ['$scope', '$rootScope', '$route', '$timeout', '$location', 'GMusic', function($scope, $rootScope, $route, $timeout, $location, GMusic) {
         $scope.playlists = [];
 
         GMusic.on('loggedIn', function() {
@@ -23,4 +23,14 @@ angular.module('gmusicPlayerApp')
         $scope.songDropped = function(data, playlist) {
             GMusic.addSongToPlaylist(data, playlist.id);
         }
+
+        $rootScope.$on("$routeChangeSuccess", function() {
+            $timeout(function() {
+                $scope.$apply(function() {
+                    var newPlId = $route.current.controller == "QueryPlaylistCtrl" ? $route.current.locals.$scope.playlistId : undefined;
+                    $scope.activePlaylistId = newPlId;
+                });
+            });
+        });
+
     }]);
