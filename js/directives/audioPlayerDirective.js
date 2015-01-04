@@ -179,7 +179,7 @@ angular.module('audioPlayer-directive', [])
 
                 // Seekbar stuff
                 function getDraggedTime(e) {
-                    var seekbar = $(e.srcElement).closest(".seekbar");
+                    var seekbar = $(e.target).closest(".seekbar");
                     var frac = (e.pageX - seekbar.offset().left) / seekbar.width();
                     return frac * $scope.audio.duration;
                 }
