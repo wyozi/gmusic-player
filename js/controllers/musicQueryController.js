@@ -2,6 +2,18 @@ var querystring = require('querystring');
 
 angular.module('gmusicPlayerApp')
     .controller('MusicQueryCtrl', ['$scope', '$rootScope', 'GMusic', '$timeout', '$location', function($scope, $rootScope, GMusic, $timeout, $location) {
+        $scope.openSongMenu = function(song, menu) {
+            menu.append(new gui.MenuItem({
+                label: 'Song ' + song.id,
+                click: function() {
+                    gui.Clipboard.get().set(song.id, 'text');
+                    var notification = new Notification("Copied!", {body: "Song id has been copied to clipboard."});
+                }
+            }));
+
+            $scope.$broadcast('addSongMenuItems', song, menu);
+        }
+
         $scope.setCurrentSong = function(song, context) {
             GMusic.getStreamUrl(song.id, function(url) {
                 $rootScope.$broadcast('audio:set', {

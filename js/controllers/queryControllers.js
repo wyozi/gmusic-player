@@ -15,14 +15,7 @@ angular.module('gmusicPlayerApp')
             })
         });
 
-        $scope.openSongMenu = function(song, menu) {
-            menu.append(new gui.MenuItem({
-                label: 'Song ' + song.id,
-                click: function() {
-                    gui.Clipboard.get().set(song.id, 'text');
-                    var notification = new Notification("Copied!", {body: "Song id has been copied to clipboard."});
-                }
-            }));
+        $scope.$on('addSongMenuItems', function(event, song, menu) {
             menu.append(new gui.MenuItem({
                 label: 'Playlist ' + $scope.playlistId,
                 click: function() {
@@ -47,7 +40,7 @@ angular.module('gmusicPlayerApp')
                     });
                 }
             }));
-        }
+        });
 
         $scope.$parent.loading = true;
         GMusic.getPlaylistSongs(playlistId, function(songs) {
