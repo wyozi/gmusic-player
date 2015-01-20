@@ -68,11 +68,12 @@ angular.module('gmusicPlayerApp')
                 $rootScope.$broadcast('audio:set', {
                     url: url,
                     info: nextSong,
-                    context: nextSong.context
+                    context: $rootScope.currentSong.context
                 });
             });
         }
 
+        /* This breaks streaming
         $rootScope.$on('audio:ending', function(event) {
             if ($scope.nextSongCached) return;
             $scope.nextSongCached = true;
@@ -91,6 +92,7 @@ angular.module('gmusicPlayerApp')
                 });
             }
         });
+        */
 
         $rootScope.$on('audio:next', function(event, triggeredByEndEvent, loopStateText) {
             $scope.moveInPlaylist(+1, triggeredByEndEvent && loopStateText != "all");

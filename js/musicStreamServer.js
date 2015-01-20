@@ -59,7 +59,7 @@ function httpListener(req, res) {
             header['Content-Type'] = 'audio/mpeg';
 
             // If user is requesting a range
-            if (typeof req.headers.range !== 'undefined') {
+            if (typeof req.headers.range !== 'undefined' || req.headers.range.trim() == "bytes=0-") {
                 var range = req.headers.range;
                 var parts = range.replace(/bytes=/, "").split("-");
                 var partialstart = parts[0];
