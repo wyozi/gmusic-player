@@ -31,6 +31,8 @@ audio-player {
 
     display: flex;
     flex-direction: column;
+
+    color: black;
 }
 
 audio-player > div {
