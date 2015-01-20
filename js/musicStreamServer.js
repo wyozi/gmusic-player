@@ -33,6 +33,8 @@ var MusicCache = new NodeCache();
 function httpListener(req, res) {
     var qs = querystring.parse(url.parse(req.url).query);
 
+    // If the request was merely a hint for the server to cache the song if it's not cached
+    // We don't actually need to server the song data
     var cacheHint = qs.cacheHint != undefined;
 
     if (qs.songId != undefined && qs.songUrl != undefined) {
@@ -51,7 +53,7 @@ function httpListener(req, res) {
             }
 
             var data = cachedMusic[songId];
-            console.log("Using cached " + songId + " (len: " + data.length + ")");
+            console.log("Using cached " + songId + " (len: " + data.getBuffer().length + ")");
             var header = {};
 
             header['Content-Type'] = 'audio/mpeg';
