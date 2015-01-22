@@ -1,5 +1,8 @@
 var querystring = require('querystring');
 
+var REWIND_THRESHOLD = 3; // the elapsed time after which we should rewind instead of going to prev. track
+
+
 angular.module('audioPlayer-directive', [])
     .filter('minutesSeconds', function() {
         return function(seconds) {
@@ -47,7 +50,13 @@ angular.module('audioPlayer-directive', [])
                     }
                 };
                 $scope.prev = function() {
-                    $rootScope.$broadcast('audio:prev');
+                    if ($scope.audio.currentTime > REWIND_THRESHOLD) {
+                        $scope.audio.currentTime = 0;
+                        $scope.audio.play();
+                    }
+                    else {
+                        $rootScope.$broadcast('audio:prev');
+                    }
                 };
 
                 $scope.playpause = function() { var a = $scope.audio.paused ? $scope.audio.play() : $scope.audio.pause(); };
