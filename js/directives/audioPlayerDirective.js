@@ -30,23 +30,19 @@ angular.module('audioPlayer-directive', [])
                 $scope.audio.volume = localStorage.volume || 1;
                 $scope.volume = $scope.audio.volume;
 
-                $scope.loopStates = [
-                    {text: 'off'},
-                    {text: 'all'},
-                    {text: 'single'}
-                ];
-                $scope.loopState = localStorage.loopState || 1;
+                $scope.loopStates = ['off', 'all', 'single'];
+                $scope.loopState = localStorage.loopState || 'off';
 
                 $scope.currentTime = 0;
 
                 $scope.next = function(triggeredByEndEvent) {
-                    if (triggeredByEndEvent && $scope.loopState == 2) {
+                    if (triggeredByEndEvent && $scope.loopState == 'single') {
                         // Repeat
                         $scope.audio.currentTime = 0;
                         $scope.audio.play();
                     }
                     else {
-                        $rootScope.$broadcast('audio:next', triggeredByEndEvent, $scope.loopStates[$scope.loopState].text);
+                        $rootScope.$broadcast('audio:next', triggeredByEndEvent, $scope.loopStates[$scope.loopState]);
                     }
                 };
                 $scope.prev = function() {
@@ -68,7 +64,8 @@ angular.module('audioPlayer-directive', [])
                         return;
                     }
 
-                    $scope.loopState = ($scope.loopState+1) % $scope.loopStates.length;
+                    var index = ($scope.loopStates.indexOf($scope.loopState) + 1) % $scope.loopStates.length;
+                    $scope.loopState = $scope.loopStates[index];
                     localStorage.loopState = $scope.loopState;
                 }
 
