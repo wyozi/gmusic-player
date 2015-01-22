@@ -17,10 +17,15 @@ GMusic.prototype.login = function(callback, errorcb) {
 
     var creds = JSON.parse(fs.readFileSync("credentials.txt", "utf8"));
 
+    var deferred = Q.defer();
+
     this.pm.init({email: creds.email, password: creds.password}, function() {
-        callback();
+        deferred.resolve();
+        that.loggedIn = true;
         that._emit('loggedIn');
-    }, errorcb);
+    }, deferred.reject);
+
+    return deferred.promise;
 }
 
 GMusic.prototype._checkCache = function(key, callback) {
