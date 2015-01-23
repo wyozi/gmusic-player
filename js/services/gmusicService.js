@@ -286,66 +286,81 @@ GMusic.prototype.getStreamUrl = function(trackid, callback, errorcb) {
 GMusic.prototype.search = function(query, scallback, serrorcb) {
     var that = this;
 
-    // Callback should only be called after we get results from both AllAccess search and library search
-    var called = 0;
-    var data = [];
-    var callback = function(sdata) {
-        data = data.concat(sdata);
+    // Search from all access
+    function allAccessSearch() {
+        var deferred = Q.defer();
 
-        if (++called >= 2){
-            var sorted = data.sort(function(a, b) {
-                return a.score < b.score;
+        that.pm.search(query, 25, function(data) {
+            var songs = (data.entries || []).map(function(res) {
+                var ret = {};
+
+                ret.score = res.score;
+
+                if (res.type == "1") {
+                    ret.type = "track";
+                    ret.track = that._parseTrackObject(res.track);
+                }
+                else if (res.type == "2") {
+                    ret.type = "artist";
+                    ret.artist = res.artist;
+                }
+                else if (res.type == "3") {
+                    ret.type = "album";
+                    ret.album = res.album;
+                }
+
+                return ret;
             });
-            scallback(sorted);
-        }
-    };
-    var errorcb = _.once(serrorcb);
 
-    this.pm.search(query, 25, function(data) {
-        var songs = (data.entries || []).map(function(res) {
-            var ret = {};
+            deferred.resolve(songs);
+        }, deferred.reject);
 
-            ret.score = res.score;
+        return deferred.promise;
+    }
 
-            if (res.type == "1") {
-                ret.type = "track";
-                ret.track = that._parseTrackObject(res.track);
+    // Search from manually uploaded songs
+    function librarySearch() {
+        var deferred = Q.defer();
+
+        that._getCachedLibrary(function(cb) {
+            var lcQuery = query.toLowerCase();
+
+            var foundSongs = cb.filter(function(item) {
+                if (item.nid != undefined && that._isAllAccessSong(item.nid)) return false;
+
+                if (item.title.toLowerCase().indexOf(lcQuery) != -1) return true;
+                if (item.artist.toLowerCase().indexOf(lcQuery) != -1) return true;
+
+                return false;
+            }).map(function(item) {
+                return {
+                    type: "track",
+                    score: 1000,
+                    track: that._parseTrackObject(item, item.id)
+                };
+            });
+
+            deferred.resolve(foundSongs);
+        }, deferred.reject);
+
+        return deferred.promise;
+    }
+
+    return Q.allSettled([allAccessSearch(), librarySearch()]).then(function(results) {
+        var items = [];
+        results.forEach(function (result) {
+            if (result.state === "fulfilled") {
+                // Equivalent to items.push(res[0], res[1], .. res[n])
+                Array.prototype.push.apply(items, result.value);
+            } else {
+                var reason = result.reason;
+                console.log("GMusic search: one of the results failed for " + reason);
             }
-            else if (res.type == "2") {
-                ret.type = "artist";
-                ret.artist = res.artist;
-            }
-            else if (res.type == "3") {
-                ret.type = "album";
-                ret.album = res.album;
-            }
-
-            return ret;
         });
-        callback(songs);
-    }, errorcb);
-
-    this._getCachedLibrary(function(cb) {
-        var lcQuery = query.toLowerCase();
-
-        var foundSongs = cb.filter(function(item) {
-            if (item.nid != undefined && that._isAllAccessSong(item.nid)) return false;
-
-            if (item.title.toLowerCase().indexOf(lcQuery) != -1) return true;
-            if (item.artist.toLowerCase().indexOf(lcQuery) != -1) return true;
-
-            return false;
-        }).map(function(item) {
-            return {
-                type: "track",
-                score: 1000,
-                track: that._parseTrackObject(item, item.id)
-            };
+        return _(items).sortBy(function(t) {
+            return -t.score; // Sort by descending score
         });
-
-        callback(foundSongs);
-    }, errorcb);
-
+    });
 }
 
 angular.module('gmusicService', []).service('GMusic', GMusic);

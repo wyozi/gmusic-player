@@ -179,7 +179,7 @@ angular.module('gmusicPlayerApp')
 
         $scope.$parent.loading = true;
 
-        GMusic.search(query, function(results) {
+        GMusic.search(query).then(function(results) {
             var onlyTracks = results.filter(function(obj) {
                 return obj.type == "track";
             }).map(function(obj) {
@@ -194,5 +194,5 @@ angular.module('gmusicPlayerApp')
                     $scope.$parent.loading = false;
                 });
             });
-        });
+        }).catch(console.log);
     }])
