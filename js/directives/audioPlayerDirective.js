@@ -219,7 +219,7 @@ angular.module('audioPlayer-directive', [])
                     }
                 }
                 $scope.range = function(n) {
-                    return Array.apply(null, Array(n)).map(function (_, i) {return i;});
+                    return _.range(n);
                 };
             },
 

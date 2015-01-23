@@ -6,7 +6,7 @@ angular.module('gmusicPlayerApp')
         GMusic.on('loggedIn', function() {
             GMusic.getPlaylists(function(playlists) {
                 $scope.$apply(function() {
-                    $scope.playlists = playlists.map(function(pl) {
+                    $scope.playlists = _(playlists).map(function(pl) {
                         return {name: pl.name, id: pl.id};
                     });
                 })
