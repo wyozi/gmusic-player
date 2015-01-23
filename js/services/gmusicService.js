@@ -51,7 +51,7 @@ GMusic.prototype._parseTrackObject = function(trackobj, trackid) {
         id: trackid || trackobj.nid,
 
         albumart: (trackobj.albumArtRef && trackobj.albumArtRef.length > 0) ? trackobj.albumArtRef[0].url : "",
-        albumid: trackobj.albumId,
+        albumid: (trackobj.albumId) ? trackobj.albumId : encodeURIComponent("custom-" + trackobj.album),
 
         artist: trackobj.artist,
         artistid: (trackobj.artistId && trackobj.artistId.length > 0) ? trackobj.artistId[0] : "",

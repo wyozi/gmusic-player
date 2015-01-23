@@ -100,17 +100,39 @@ angular.module('gmusicPlayerApp')
         $scope.album = undefined;
         $scope.$parent.loading = true;
 
-        GMusic.getAlbum(albumId, function(album) {
-            $timeout(function() {
-                $scope.$apply(function() {
-                    $scope.album = album;
-                    $scope.songs = album.tracks;
-                    $scope.songContext = {songs: album.tracks, path: '#/albums/' + albumId};
+        if (albumId.indexOf('custom-') == 0) {
+            GMusic._getCachedLibrary(function(lib) {
+                $timeout(function() {
+                    $scope.$apply(function() {
+                        $scope.album = decodeURIComponent(albumId).substr(7);
 
-                    $scope.$parent.loading = false;
+                        var tracks = lib.filter(function(t) {
+                            return t.album == $scope.album;
+                        }).map(function(t) {
+                            return GMusic._parseTrackObject(t, t.id);
+                        });
+
+                        $scope.songs = tracks;
+                        $scope.songContext = {songs: tracks, path: '#/albums/' + albumId};
+
+                        $scope.$parent.loading = false;
+                    });
                 });
-            })
-        });
+            });
+        }
+        else {
+            GMusic.getAlbum(albumId, function(album) {
+                $timeout(function() {
+                    $scope.$apply(function() {
+                        $scope.album = album;
+                        $scope.songs = album.tracks;
+                        $scope.songContext = {songs: album.tracks, path: '#/albums/' + albumId};
+
+                        $scope.$parent.loading = false;
+                    });
+                })
+            });
+        }
     }])
     .controller('QuerySearchCtrl', ['$rootScope', '$scope', '$routeParams', '$timeout', '$route', 'GMusic', function($rootScope, $scope, $routeParams, $timeout, $route, GMusic) {
         var query = $routeParams.query;
