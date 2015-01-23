@@ -7,7 +7,7 @@ angular.module('gmusicPlayerApp')
                 label: 'Song ' + song.id,
                 click: function() {
                     gui.Clipboard.get().set(song.id, 'text');
-                    var notification = new Notification("Copied!", {body: "Song id has been copied to clipboard."});
+                    console.log("Original track object for " + song.id + ": ", song.origTrackObj);
                 }
             }));
 

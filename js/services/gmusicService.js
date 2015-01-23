@@ -57,7 +57,9 @@ GMusic.prototype._parseTrackObject = function(trackobj, trackid) {
         artistid: (trackobj.artistId && trackobj.artistId.length > 0) ? trackobj.artistId[0] : "",
 
         album: trackobj.album,
-        title: trackobj.title
+        title: trackobj.title,
+
+        origTrackObj: trackobj
     }
 }
 
