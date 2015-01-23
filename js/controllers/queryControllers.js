@@ -78,20 +78,58 @@ angular.module('gmusicPlayerApp')
             });
         }
 
-        GMusic.getArtist(artistId, function(artist) {
-            $timeout(function() {
-                $scope.artist = artist;
-                $scope.albums = artist.albums;
+        if (artistId.indexOf('custom-') == 0) {
+            GMusic._getCachedLibrary(function(lib) {
+                $timeout(function() {
+                    $scope.$apply(function() {
+                        $scope.artist = {name: decodeURIComponent(artistId).substr(7)};
+                        $scope.albums = [];
 
-                $scope.allSongs = artist.topTracks;
+                        var tracks = _.chain(lib).filter(function(t) {
+                            return t.artist == $scope.artist.name;
+                        }).map(function(t) {
+                            return GMusic._parseTrackObject(t, t.id);
+                        }).sortBy(function(t) {
+                            return -t.playCount; // make sort descending
+                        }).value();
 
-                $scope.showMore();
+                        _.chain(tracks).groupBy('album').map(_.first).sortBy(function(t) {
+                            return -t.year; // make sort descending
+                        }).each(function(firstTrack) {
+                            $scope.albums.push({
+                                id: encodeURIComponent('custom-' + firstTrack.album),
+                                name: firstTrack.album,
+                                art: firstTrack.albumart,
+                                year: firstTrack.year
+                            });
+                        });
 
-                $scope.songContext = {songs: artist.topTracks, path: '#/artists/' + artistId};
+                        $scope.showMore();
 
-                $scope.$parent.loading = false;
-            })
-        });
+                        $scope.allSongs = tracks;
+                        $scope.songContext = {songs: tracks, path: '#/artists/' + artistId};
+
+                        $scope.$parent.loading = false;
+                    });
+                });
+            });
+        }
+        else {
+            GMusic.getArtist(artistId, function(artist) {
+                $timeout(function() {
+                    $scope.artist = artist;
+                    $scope.albums = artist.albums;
+
+                    $scope.allSongs = artist.topTracks;
+
+                    $scope.showMore();
+
+                    $scope.songContext = {songs: artist.topTracks, path: '#/artists/' + artistId};
+
+                    $scope.$parent.loading = false;
+                })
+            });
+        }
     }])
     .controller('QueryAlbumCtrl', ['$rootScope', '$scope', '$routeParams', '$timeout', '$route', 'GMusic', function($rootScope, $scope, $routeParams, $timeout, $route, GMusic) {
         var albumId = $routeParams.album;
@@ -104,10 +142,10 @@ angular.module('gmusicPlayerApp')
             GMusic._getCachedLibrary(function(lib) {
                 $timeout(function() {
                     $scope.$apply(function() {
-                        $scope.album = decodeURIComponent(albumId).substr(7);
+                        $scope.album = {name: decodeURIComponent(albumId).substr(7)};
 
                         var tracks = lib.filter(function(t) {
-                            return t.album == $scope.album;
+                            return t.album == $scope.album.name;
                         }).map(function(t) {
                             return GMusic._parseTrackObject(t, t.id);
                         });

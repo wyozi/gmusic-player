@@ -54,10 +54,14 @@ GMusic.prototype._parseTrackObject = function(trackobj, trackid) {
         albumid: (trackobj.albumId) ? trackobj.albumId : encodeURIComponent("custom-" + trackobj.album),
 
         artist: trackobj.artist,
-        artistid: (trackobj.artistId && trackobj.artistId.length > 0) ? trackobj.artistId[0] : "",
+        artistid: (trackobj.artistId && trackobj.artistId.length > 0) ? trackobj.artistId[0] : encodeURIComponent("custom-" + trackobj.artist),
 
         album: trackobj.album,
         title: trackobj.title,
+
+        year: trackobj.year,
+
+        playCount: trackobj.playCount || 0,
 
         origTrackObj: trackobj
     }
