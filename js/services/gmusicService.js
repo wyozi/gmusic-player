@@ -204,19 +204,20 @@ GMusic.prototype.removeSongFromPlaylist = function(songId, playlistId, success, 
     }, errorcb);
 }
 
-GMusic.prototype.getSong = function(songId, callback, errorcb) {
+GMusic.prototype.getSong = function(songId) {
     var that = this;
+    var deferred = Q.defer();
 
     var key = "songs/" + songId;
 
-    if (!this._checkCache(key, callback)) {
+    if (!this._checkCache(key, deferred.resolve)) {
         if (that._isAllAccessSong(songId)) {
             that.pm.getAllAccessTrack(songId, function(info) {
                 var song = that._parseTrackObject(info);
 
-                callback(song);
+                deferred.resolve(song);
                 that._cache.set(key, song);
-            }, errorcb);
+            }, deferred.reject);
         }
         else {
             that._getCachedLibrary(function(items) {
@@ -224,17 +225,18 @@ GMusic.prototype.getSong = function(songId, callback, errorcb) {
                     var track = items[itemidx];
                     if (track.id == songId) {
                         var song = that._parseTrackObject(track, track.id);
-                        callback(song);
+                        deferred.resolve(song);
                         that._cache.set(key, song);
                         return;
                     }
                 }
-                that.pm.error(errorcb, "Couldn't find non-AllAccess track with given id");
-            }, errorcb);
+                deferred.reject("Couldn't find non-AllAccess track with given id");
+            }, deferred.reject);
 
         }
     }
 
+    return deferred.promise;
 }
 
 GMusic.prototype.getAlbum = function(nid, callback, errorcb) {

@@ -3,17 +3,15 @@ angular.module('gmusicPlayerApp')
         GMusic.on('loggedIn', function() {
             var lsid = localStorage.lastSongId;
             if (lsid != undefined) {
-                GMusic.getSong(lsid, function(track) {
-                    GMusic.getStreamUrl(lsid).then(function(url) {
-                        $rootScope.$broadcast('audio:set', {
-                            url: url,
-                            info: track,
+                Q.spread([GMusic.getSong(lsid), GMusic.getStreamUrl(lsid)], function(track, url) {
+                    $rootScope.$broadcast('audio:set', {
+                        url: url,
+                        info: track,
 
-                            // startAt doesn't work properly, so we'll just start from the beginning
-                            //startAt: localStorage.lastSongTime || 0,
+                        // startAt doesn't work properly, so we'll just start from the beginning
+                        //startAt: localStorage.lastSongTime || 0,
 
-                            startPaused: true
-                        });
+                        startPaused: true
                     });
                 });
             }
