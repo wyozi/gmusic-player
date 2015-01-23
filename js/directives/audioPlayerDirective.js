@@ -137,7 +137,6 @@ angular.module('audioPlayer-directive', [])
                     localStorage.lastSongId = info.id;
 
                     $rootScope.currentSong = data;
-                    $scope.$apply();
                 });
 
                 $scope.audio.addEventListener('timeupdate', function() {

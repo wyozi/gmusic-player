@@ -15,14 +15,22 @@ angular.module('gmusicPlayerApp')
         }
 
         $scope.setCurrentSong = function(song, context) {
-            GMusic.getStreamUrl(song.id).then(function(url) {
+            function broadcastSong(url) {
                 $rootScope.$broadcast('audio:set', {
                     url: url,
                     info: song,
 
                     context: context //an array of songs. Eg the playlist or album the song was played from. Can be null
                 });
-            });
+            }
+
+            if (window.StreamServer.IsSongIdCached(song.id)) {
+                broadcastSong("http://"); // URL doesn't matter. The song id is already cached to music server.
+            }
+            else {
+                GMusic.getStreamUrl(song.id).then(broadcastSong);
+            }
+
         }
 
         $scope.go = function(path) {

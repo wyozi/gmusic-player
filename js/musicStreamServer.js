@@ -33,6 +33,10 @@ window.StreamServer = {};
 
     var MusicCache = new NodeCache();
 
+    exports.IsSongIdCached = function(id) {
+        return id in MusicCache.get(id);
+    }
+
     function httpListener(req, res) {
         var qs = querystring.parse(url.parse(req.url).query);
 
