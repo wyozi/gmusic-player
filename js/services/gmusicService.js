@@ -12,7 +12,7 @@ function GMusic() {
 
 addEvents(GMusic, ['loggedIn']);
 
-GMusic.prototype.login = function(callback, errorcb) {
+GMusic.prototype.login = function() {
     var that = this;
 
     var creds = JSON.parse(fs.readFileSync("credentials.txt", "utf8"));
@@ -283,7 +283,7 @@ GMusic.prototype.getStreamUrl = function(trackid, callback, errorcb) {
     this.pm.getStreamUrl(trackid, callback, errorcb);
 }
 
-GMusic.prototype.search = function(query, scallback, serrorcb) {
+GMusic.prototype.search = function(query) {
     var that = this;
 
     // Search from all access
