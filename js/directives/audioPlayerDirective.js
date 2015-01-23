@@ -101,7 +101,7 @@ angular.module('audioPlayer-directive', [])
                     var info = data.info;
                     var context = data.context;
 
-                    $scope.audio.src = "http://localhost:" + (MusicStreamServerPort || 8080) + "/?" + querystring.stringify({
+                    $scope.audio.src = "http://localhost:" + (window.StreamServer.Port || 8080) + "/?" + querystring.stringify({
                         songId: info.id,
                         songUrl: new Buffer(url).toString('base64')
                     });

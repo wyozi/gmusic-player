@@ -82,7 +82,7 @@ angular.module('gmusicPlayerApp')
             console.debug("Audio ending; let's cache the next song in context");
             if (nextSong != undefined) {
                 GMusic.getStreamUrl(nextSong.id).then(function(url) {
-                    var url = "http://localhost:" + (MusicStreamServerPort || 8080) + "/?" + querystring.stringify({
+                    var url = "http://localhost:" + (window.StreamServer.Port || 8080) + "/?" + querystring.stringify({
                         songId: nextSong.id,
                         songUrl: new Buffer(url).toString('base64'),
                         cacheHint : true
