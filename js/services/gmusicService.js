@@ -367,4 +367,15 @@ GMusic.prototype.search = function(query) {
     });
 }
 
+GMusic.prototype.incrementTrackPlaycount = function(songId) {
+    var deferred = Q.defer();
+    if ("incrementTrackPlaycount" in this.pm) {
+        this.pm.incrementTrackPlaycount(songId, deferred.resolve, deferred.reject);
+    }
+    else {
+        deferred.reject("Playmusic does not have 'incrementTrackPlaycount'! Probably needs an update");
+    }
+    return deferred.promise;
+}
+
 angular.module('gmusicService', []).service('GMusic', GMusic);

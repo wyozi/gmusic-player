@@ -20,7 +20,7 @@ angular.module('audioPlayer-directive', [])
             return minutes + ':' + seconds;
         }
     })
-    .directive('audioPlayer', ['$rootScope', '$window', function($rootScope, $window) {
+    .directive('audioPlayer', ['$rootScope', '$window', 'GMusic', function($rootScope, $window, GMusic) {
         return {
             restrict: 'E',
             scope: {},
@@ -112,6 +112,9 @@ angular.module('audioPlayer-directive', [])
                         }
                         else {
                             $scope.audio.play();
+
+                            // Playcount should only be incremented when we actually play the track
+                            GMusic.incrementTrackPlaycount(info.id).catch(function(e) { console.error(e); });
                         }
                     };
 
