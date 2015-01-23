@@ -15,14 +15,14 @@ angular.module('gmusicPlayerApp')
         }
 
         $scope.setCurrentSong = function(song, context) {
-            GMusic.getStreamUrl(song.id, function(url) {
+            GMusic.getStreamUrl(song.id).then(function(url) {
                 $rootScope.$broadcast('audio:set', {
                     url: url,
                     info: song,
 
                     context: context //an array of songs. Eg the playlist or album the song was played from. Can be null
                 });
-            })
+            });
         }
 
         $scope.go = function(path) {
@@ -64,7 +64,7 @@ angular.module('gmusicPlayerApp')
                 return;
             }
 
-            GMusic.getStreamUrl(nextSong.id, function(url) {
+            GMusic.getStreamUrl(nextSong.id).then(function(url) {
                 $rootScope.$broadcast('audio:set', {
                     url: url,
                     info: nextSong,
@@ -81,7 +81,7 @@ angular.module('gmusicPlayerApp')
             var nextSong = $scope.getNextInPlaylist(+1);
             console.debug("Audio ending; let's cache the next song in context");
             if (nextSong != undefined) {
-                GMusic.getStreamUrl(nextSong.id, function(url) {
+                GMusic.getStreamUrl(nextSong.id).then(function(url) {
                     var url = "http://localhost:" + (MusicStreamServerPort || 8080) + "/?" + querystring.stringify({
                         songId: nextSong.id,
                         songUrl: new Buffer(url).toString('base64'),

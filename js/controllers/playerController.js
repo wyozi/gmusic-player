@@ -4,7 +4,7 @@ angular.module('gmusicPlayerApp')
             var lsid = localStorage.lastSongId;
             if (lsid != undefined) {
                 GMusic.getSong(lsid, function(track) {
-                    GMusic.getStreamUrl(lsid, function(url) {
+                    GMusic.getStreamUrl(lsid).then(function(url) {
                         $rootScope.$broadcast('audio:set', {
                             url: url,
                             info: track,

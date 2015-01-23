@@ -279,8 +279,10 @@ GMusic.prototype.getArtist = function(artistId, callback, errorcb) {
     }
 }
 
-GMusic.prototype.getStreamUrl = function(trackid, callback, errorcb) {
-    this.pm.getStreamUrl(trackid, callback, errorcb);
+GMusic.prototype.getStreamUrl = function(trackid) {
+    var deferred = Q.defer();
+    this.pm.getStreamUrl(trackid, deferred.resolve, deferred.reject);
+    return deferred.promise;
 }
 
 GMusic.prototype.search = function(query) {
