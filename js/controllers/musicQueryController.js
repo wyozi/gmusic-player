@@ -72,13 +72,7 @@ angular.module('gmusicPlayerApp')
                 return;
             }
 
-            GMusic.getStreamUrl(nextSong.id).then(function(url) {
-                $rootScope.$broadcast('audio:set', {
-                    url: url,
-                    info: nextSong,
-                    context: $rootScope.currentSong.context
-                });
-            });
+            $scope.setCurrentSong(nextSong, $rootScope.currentSong.context);
         }
 
         /* This breaks streaming
