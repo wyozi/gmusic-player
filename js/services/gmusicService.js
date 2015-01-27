@@ -49,6 +49,7 @@ GMusic.prototype._isAllAccessSong = function(songid) {
 GMusic.prototype._parseTrackObject = function(trackobj, trackid) {
     return {
         id: trackid || trackobj.nid,
+        trackNumber: trackobj.trackNumber || 0,
 
         albumart: (trackobj.albumArtRef && trackobj.albumArtRef.length > 0) ? trackobj.albumArtRef[0].url : "",
         albumid: (trackobj.albumId) ? trackobj.albumId : encodeURIComponent("custom-" + trackobj.album),

@@ -144,11 +144,13 @@ angular.module('gmusicPlayerApp')
                     $scope.$apply(function() {
                         $scope.album = {name: decodeURIComponent(albumId).substr(7)};
 
-                        var tracks = lib.filter(function(t) {
+                        var tracks = _.chain(lib).filter(function(t) {
                             return t.album == $scope.album.name;
                         }).map(function(t) {
                             return GMusic._parseTrackObject(t, t.id);
-                        });
+                        }).sortBy(function(t) {
+                            return t.trackNumber;
+                        }).value();
 
                         $scope.songs = tracks;
                         $scope.songContext = {songs: tracks, path: '#/albums/' + albumId};
