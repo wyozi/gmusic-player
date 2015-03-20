@@ -328,24 +328,22 @@ GMusic.prototype.search = function(query) {
         var deferred = Q.defer();
 
         that._getCachedLibrary(function(cb) {
-            var lcQuery = query.toLowerCase();
+            var parsedTracks = cb.map(function(track) {
+                return that._parseTrackObject(track, track.id);
+            });
+            var fuse = new Fuse(parsedTracks, {includeScore: true, threshold: 0.5, keys: ["artist", "album", "title"]});
+            var result = fuse.search(query);
 
-            var foundSongs = cb.filter(function(item) {
-                if (item.nid != undefined && that._isAllAccessSong(item.nid)) return false;
-
-                if (item.title.toLowerCase().indexOf(lcQuery) != -1) return true;
-                if (item.artist.toLowerCase().indexOf(lcQuery) != -1) return true;
-
-                return false;
-            }).map(function(item) {
+            var foundTracks = result.map(function(item) {
+                var track = item.item;
                 return {
                     type: "track",
-                    score: 1000,
-                    track: that._parseTrackObject(item, item.id)
+                    score: (1 - item.score) * 100,
+                    track: that._parseTrackObject(track, track.id)
                 };
             });
 
-            deferred.resolve(foundSongs);
+            deferred.resolve(foundTracks);
         }, deferred.reject);
 
         return deferred.promise;
