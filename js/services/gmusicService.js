@@ -12,24 +12,57 @@ function GMusic() {
 
 addEvents(GMusic, ['loggedIn']);
 
+GMusic.prototype.getLoginCredentials = function() {
+    var deferred = Q.defer();
+
+    if (!fs.existsSync("credentials.txt")) {
+        deferred.reject("credentials.txt does not exist. See readme.");
+        return deferred.promise;
+    }
+
+    var creds = JSON.parse(fs.readFileSync("credentials.txt", "utf8"));
+    if ((!creds.email || !creds.password) && (!creds.androidId || !creds.masterToken)) {
+        deferred.reject("credentials.txt does not have required keys. See readme.");
+        return deferred.promise;
+    }
+
+    if (creds.email && creds.password) {
+        this.pm.login({email: creds.email, password: creds.password}, function(err, data) {
+            if (err) { deferred.reject(err); return; }
+
+            console.log("Replacing plain text credentials with androidId and masterToken");
+
+            var newCreds = {androidId: data.androidId, masterToken: data.masterToken};
+            fs.writeFile("credentials.txt", JSON.stringify(newCreds));
+
+            deferred.resolve(newCreds);
+        });
+    }
+    else {
+        deferred.resolve({androidId: creds.androidId, masterToken: creds.masterToken});
+    }
+
+    return deferred.promise;
+}
+
 GMusic.prototype.login = function() {
     var that = this;
 
-    var creds = JSON.parse(fs.readFileSync("credentials.txt", "utf8"));
+    return this.getLoginCredentials().then(function(creds) {
+        var deferred = Q.defer();
 
-    var deferred = Q.defer();
+        that.pm.init({androidId: creds.androidId, masterToken: creds.masterToken}, function(err, data) {
+            if (err) {
+                deferred.reject(err);
+                return;
+            }
+            deferred.resolve();
+            that.loggedIn = true;
+            that._emit('loggedIn');
+        });
 
-    this.pm.init({email: creds.email, password: creds.password}, function(err) {
-        if (err) {
-            deferred.reject(err);
-            return;
-        }
-        deferred.resolve();
-        that.loggedIn = true;
-        that._emit('loggedIn');
+        return deferred.promise;
     });
-
-    return deferred.promise;
 }
 
 GMusic.prototype._checkCache = function(key, callback) {
