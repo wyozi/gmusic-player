@@ -19,11 +19,15 @@ GMusic.prototype.login = function() {
 
     var deferred = Q.defer();
 
-    this.pm.init({email: creds.email, password: creds.password}, function() {
+    this.pm.init({email: creds.email, password: creds.password}, function(err) {
+        if (err) {
+            deferred.reject(err);
+            return;
+        }
         deferred.resolve();
         that.loggedIn = true;
         that._emit('loggedIn');
-    }, deferred.reject);
+    });
 
     return deferred.promise;
 }
@@ -72,10 +76,11 @@ GMusic.prototype.getPlaylists = function(callback, errorcb) {
     var that = this;
 
     if (!this._checkCache("playlists", callback)) {
-        this.pm.getPlayLists(function(data) {
+        this.pm.getPlayLists(function(err, data) {
+            if (err) {errorcb(err); return; }
             that._cache.set("playlists", data.data.items);
             callback(data.data.items);
-        }, errorcb);
+        });
     }
 }
 
@@ -102,10 +107,11 @@ GMusic.prototype._getCachedLibrary = function(callback, errorcb) {
     var that = this;
 
     if (!this._checkCache("library", callback)) {
-        this.pm.getLibrary(function(lib) {
+        this.pm.getLibrary(function(err, lib) {
+            if (err) { errorcb(err); return; }
             that._cache.set("library", lib.data.items);
             callback(lib.data.items);
-        }, errorcb);
+        });
     }
 }
 
@@ -113,10 +119,11 @@ GMusic.prototype.getPlaylistEntries = function(callback, errorcb) {
     var that = this;
 
     if (!this._checkCache("playlist-entries", callback)) {
-        this.pm.getPlayListEntries(function(data) {
+        this.pm.getPlayListEntries(function(err, data) {
+            if (err) { errorcb(err); return; }
             that._cache.set("playlist-entries", data.data.items);
             callback(data.data.items);
-        }, errorcb);
+        });
     }
 }
 
@@ -174,13 +181,15 @@ GMusic.prototype.getPlaylistSongs = function(playlistid, callback, errorcb) {
 GMusic.prototype.addSongToPlaylist = function(songId, playlistId, success, errorcb) {
     var that = this;
 
-    this.pm.addTrackToPlayList(songId, playlistId, function(data) {
+    this.pm.addTrackToPlayList(songId, playlistId, function(err, data) {
+        if (err) { errorcb(err); return; }
+
         // Invalidate playlist entry cache, so next time we get playlist entries, the new song will be there
         that._cache.del("playlist-entries");
         that._cache.del("playlist-songs/" + playlistId);
 
-        that.pm.success(success, data);
-    }, errorcb);
+        success(data);
+    });
 }
 
 GMusic.prototype.removeSongFromPlaylist = function(songId, playlistId, success, errorcb) {
@@ -201,7 +210,7 @@ GMusic.prototype.removeSongFromPlaylist = function(songId, playlistId, success, 
         that._cache.del("playlist-entries");
         that._cache.del("playlist-songs/" + playlistId);
 
-        that.pm.success(success, {removed: wasRemoved});
+        success({removed: wasRemoved});
     }, errorcb);
 }
 
@@ -213,12 +222,14 @@ GMusic.prototype.getSong = function(songId) {
 
     if (!this._checkCache(key, deferred.resolve)) {
         if (that._isAllAccessSong(songId)) {
-            that.pm.getAllAccessTrack(songId, function(info) {
+            that.pm.getAllAccessTrack(songId, function(err, info) {
+                if (err) { deferred.reject(err); return; }
+
                 var song = that._parseTrackObject(info);
 
                 deferred.resolve(song);
                 that._cache.set(key, song);
-            }, deferred.reject);
+            });
         }
         else {
             that._getCachedLibrary(function(items) {
@@ -246,7 +257,9 @@ GMusic.prototype.getAlbum = function(nid, callback, errorcb) {
     var key = "albums/" + nid;
 
     if (!this._checkCache(key, callback)) {
-        this.pm.getAlbum(nid, true, function(data) {
+        this.pm.getAlbum(nid, true, function(err, data) {
+            if (err) { errorcb(err); return; }
+
             var album = {};
 
             album.name = data.name;
@@ -254,7 +267,7 @@ GMusic.prototype.getAlbum = function(nid, callback, errorcb) {
 
             that._cache.set(key, album);
             callback(album);
-        }, errorcb);
+        });
     }
 }
 
@@ -264,7 +277,9 @@ GMusic.prototype.getArtist = function(artistId, callback, errorcb) {
     var key = "artists/" + artistId;
 
     if (!this._checkCache(key, callback)) {
-        this.pm.getArtist(artistId, true, 25, 0, function(data) {
+        this.pm.getArtist(artistId, true, 25, 0, function(err, data) {
+            if (err) { errorcb(err); return; }
+
             var artist = {};
 
             artist.albums = data.albums.map(function(o) {
@@ -278,13 +293,16 @@ GMusic.prototype.getArtist = function(artistId, callback, errorcb) {
 
             that._cache.set(key, artist);
             callback(artist);
-        }, errorcb);
+        });
     }
 }
 
 GMusic.prototype.getStreamUrl = function(trackid) {
     var deferred = Q.defer();
-    this.pm.getStreamUrl(trackid, deferred.resolve, deferred.reject);
+    this.pm.getStreamUrl(trackid, function(err, url) {
+        if (err) { deferred.reject(err); return; }
+        deferred.resolve(url);
+    });
     return deferred.promise;
 }
 
@@ -295,7 +313,9 @@ GMusic.prototype.search = function(query) {
     function allAccessSearch() {
         var deferred = Q.defer();
 
-        that.pm.search(query, 25, function(data) {
+        that.pm.search(query, 25, function(err, data) {
+            if (err) { deferred.reject(err); return; }
+
             var songs = (data.entries || []).map(function(res) {
                 var ret = {};
 
@@ -318,7 +338,7 @@ GMusic.prototype.search = function(query) {
             });
 
             deferred.resolve(songs);
-        }, deferred.reject);
+        });
 
         return deferred.promise;
     }
@@ -368,12 +388,10 @@ GMusic.prototype.search = function(query) {
 
 GMusic.prototype.incrementTrackPlaycount = function(songId) {
     var deferred = Q.defer();
-    if ("incrementTrackPlaycount" in this.pm) {
-        this.pm.incrementTrackPlaycount(songId, deferred.resolve, deferred.reject);
-    }
-    else {
-        deferred.reject("Playmusic does not have 'incrementTrackPlaycount'! Probably needs an update");
-    }
+    this.pm.incrementTrackPlaycount(songId, function(err) {
+        if (err) { deferred.reject(err); return; }
+        deferred.resolve();
+    });
     return deferred.promise;
 }
 
