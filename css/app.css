@@ -29,6 +29,9 @@ body {
 .query-results tr.showmore > td {
     background-color: rgba(0, 0, 0, 0.15);
 }
+.query-results > tr.unplayedSong td {
+    background-color: rgba(50, 255, 50, 0.03);
+}
 .query-results > tr.activesong td {
     background-color: #27ae60;
 }
