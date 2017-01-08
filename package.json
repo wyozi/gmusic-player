@@ -22,7 +22,7 @@
     "bl": "~0.9.3",
     "freeport": "~1.0.3",
     "node-cache": "~1.0.3",
-    "playmusic": "2.0.3",
+    "playmusic": "^2.2.0",
     "request": "~2.49.0"
   }
 }
