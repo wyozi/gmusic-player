@@ -140,7 +140,7 @@ GMusic.prototype._getCachedLibrary = function(callback, errorcb) {
     var that = this;
 
     if (!this._checkCache("library", callback)) {
-        this.pm.getLibrary(function(err, lib) {
+        this.pm.getLibrary({limit: 10000}, function(err, lib) {
             if (err) { errorcb(err); return; }
             that._cache.set("library", lib.data.items);
             callback(lib.data.items);
